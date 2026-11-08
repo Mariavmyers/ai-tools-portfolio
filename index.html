@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Tools Portfolio · Maria Myers</title>
+<meta name="description" content="Live, click-to-try AI tools built by Maria Myers, a trilingual (EN/PT/ES/IT) medical and legal interpreter who builds with Claude Code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#f5f2ea; --surface:#fffdf8; --ink:#1c1a15; --soft:#5c584c; --line:#ddd6c4; --accent:#0f6b5c; --accent-soft:#dcefe9; --gold:#a8790f; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#14130f; --surface:#1d1b16; --ink:#f1ede1; --soft:#a8a08a; --line:#36321f; --accent:#5fc7b1; --accent-soft:#183129; --gold:#e0b34a; } }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55}
+  .wrap{max-width:960px;margin:0 auto;padding:48px 16px 64px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:0 0 10px}
+  h1{font-family:Fraunces,Georgia,serif;font-size:clamp(34px,6vw,54px);line-height:1.05;margin:0 0 14px;text-wrap:balance}
+  .lede{font-size:17px;color:var(--soft);max-width:62ch;margin:0 0 22px}
+  .links{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
+  .links a{font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px}
+  .links a:hover{border-color:var(--accent)}
+  .feature{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:22px;margin-bottom:28px}
+  .feature .tag{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:3px 10px;margin-bottom:10px}
+  .feature h2{font-family:Fraunces,Georgia,serif;font-size:26px;margin:0 0 6px}
+  .feature p{margin:0 0 12px;color:var(--soft)}
+  .feature .row{display:flex;gap:16px;flex-wrap:wrap;font-weight:600;font-size:14px}
+  .feature .row a{color:var(--accent)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .card{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .card .icon{font-size:26px}
+  .card h3{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0}
+  .card p{margin:0;color:var(--soft);font-size:14.5px}
+  .card .note{font-size:12.5px;color:var(--gold);font-weight:600}
+  .card .go{margin-top:auto;font-weight:600;color:var(--accent);font-size:14px}
+  footer{margin-top:44px;font-size:13px;color:var(--soft);border-top:1px solid var(--line);padding-top:16px}
+  footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="eyebrow">Maria Myers · MainEntry LLC</p>
+  <h1>AI tools I've built, live and ready to try</h1>
+  <p class="lede">I'm a medical and legal interpreter (English, Portuguese, Spanish, Italian) with about 20 years of experience, building AI tools with Claude Code. My focus: how AI describes businesses, whether it says the same thing in every language, and turning that into practical tools.</p>
+  <div class="links">
+    <a href="https://github.com/Mariavmyers">GitHub profile</a>
+    <a href="https://querytrends.ai">QueryTrends.ai</a>
+    <a href="https://www.linkedin.com/in/mainentry/">LinkedIn</a>
+  </div>
+
+  <div class="feature">
+    <span class="tag">Meta Global AI Developer Hackathon 2026</span>
+    <h2>🩺 LinguaCheck</h2>
+    <p>Does the AI say the same thing in every language? LinguaCheck asks Meta's Muse Spark Open the same medical, legal or finance question in English and Brazilian Portuguese, flags where the answers drift, and puts a professional interpreter in the loop to confirm each flag.</p>
+    <div class="row">
+      <a href="https://youtu.be/X9qs2wmBoCU">▶ Demo video</a>
+      <a href="https://huggingface.co/spaces/hugmarie/linguacheck">🚀 Live app</a>
+      <a href="https://github.com/Mariavmyers/linguacheck">💻 Code</a>
+      <a href="linguacheck-recording-guide/">🎬 Recording guide</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="verdict-bench/">
+      <span class="icon">⚖️</span>
+      <h3>Verdict Bench</h3>
+      <p>A blind "AI judge" brand audit. Compare how ChatGPT, Gemini, Claude, Grok, Mistral, Qwen and Latin American models describe the same brand, weight five criteria, and export a ranked report.</p>
+      <span class="note">Demo scoring: built-in rules, not live AI calls · fictional brand</span>
+      <span class="go">Try it →</span>
+    </a>
+    <a class="card" href="data-center-calculator/">
+      <span class="icon">🏗️</span>
+      <h3>Data Center Impact Calculator</h3>
+      <p>Pick a ZIP code and your role (resident, landowner, contractor, job seeker) to see your distance from a proposed data center site and a tailored 3-step action plan.</p>
+      <span class="note">Portfolio demo: sample ZIP codes</span>
+      <span class="go">Try it →</span>
+    </a>
+    <a class="card" href="newsletter-builder/">
+      <span class="icon">📰</span>
+      <h3>QueryTrends Weekly Builder</h3>
+      <p>A one-click newsletter writer for an AI-discoverability consultancy: pick a topic or let it choose, and get a plain-language, ready-to-send issue in a consistent house style.</p>
+      <span class="note">Portfolio demo: sample issues</span>
+      <span class="go">Try it →</span>
+    </a>
+    <a class="card" href="https://github.com/Mariavmyers/querytrends-social">
+      <span class="icon">🔎</span>
+      <h3>QueryTrends X-Ray</h3>
+      <p>Scans any website for 13 AI-discoverability signals, writes posts in EN/ES/PT-BR, and schedules them through the Blotato API. Includes n8n workflow, MCP setup, tests and a debug log.</p>
+      <span class="note">Runs locally · code on GitHub</span>
+      <span class="go">View code →</span>
+    </a>
+  </div>
+
+  <footer>Built with Claude Code by Maria Myers. All demo data is fictional or sample data; no client or patient information is used. <a href="https://github.com/Mariavmyers/ai-tools-portfolio">Source code</a></footer>
+</main>
+</body>
+</html>

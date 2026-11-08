@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Data Center Impact Calculator · Maria Myers</title>
+<style>
+  :root {
+    --amber: #f9d896; --orange: #c8632b; --orange-dark: #b5651d;
+    --ink: #1a1a1a; --ink-head: #111111; --gray-text: #555555; --gray-light: #888888;
+    --bg: #faf8f5; --card-bg: #ffffff; --card-border: #e6e0d8; --callout-bg: #fdf1e6; --rule: #dddddd;
+    --zone-direct: #c0392b; --zone-secondary: #c8632b; --zone-regional: #b8860b; --zone-outside: #3d7a4d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14120f; --card-bg: #1d1a16; --card-border: #332c22; --ink: #f1ece2; --ink-head: #ffffff;
+      --gray-text: #c9c0b2; --gray-light: #9a9082; --callout-bg: #2a2117; --rule: #3a3227;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  .topbar { font: 13px/1.4 system-ui, sans-serif; background: #1d1a16; color: #f1ece2; padding: 8px 16px; display: flex; gap: 12px; justify-content: space-between; flex-wrap: wrap; }
+  .topbar a { color: var(--amber); text-decoration: none; font-weight: 600; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 28px 16px 60px; }
+  .brandline { text-align: center; font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; color: var(--gray-light); text-transform: uppercase; margin-bottom: 6px; }
+  h1.title { text-align: center; font-size: 26px; line-height: 1.25; margin: 0 0 6px; color: var(--ink-head); }
+  .title mark { background: var(--orange); color: #fff; padding: 0 6px; border-radius: 3px; }
+  p.lede { text-align: center; font-size: 14.5px; color: var(--gray-text); margin: 0 0 22px; line-height: 1.5; }
+  .demo-note { background: var(--callout-bg); border-left: 3px solid var(--orange); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 13px; line-height: 1.5; margin: 0 0 18px; }
+  .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 26px 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  label { display: block; font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--gray-text); margin: 0 0 6px; }
+  select { width: 100%; font-size: 16px; padding: 12px 14px; border-radius: 9px; border: 1.5px solid var(--card-border); background: var(--bg); color: var(--ink); margin-bottom: 18px; font-family: inherit; }
+  select:focus { outline: none; border-color: var(--orange); }
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .role-btn { border: 1.5px solid var(--card-border); background: var(--bg); color: var(--ink); border-radius: 10px; padding: 12px 8px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; line-height: 1.3; font-family: inherit; }
+  .role-btn .emoji { display: block; font-size: 20px; margin-bottom: 4px; }
+  .role-btn.selected { border-color: var(--orange); background: var(--callout-bg); color: var(--ink-head); }
+  button.primary { display: block; width: 100%; background: var(--orange); color: #fff; border: none; border-radius: 10px; padding: 14px 18px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  button.primary:hover { background: var(--orange-dark); }
+  button.link-btn { display: block; width: 100%; background: none; border: none; color: var(--gray-light); font-size: 12.5px; text-align: center; margin-top: 14px; cursor: pointer; text-decoration: underline; }
+  .err { color: var(--zone-direct); font-size: 13px; margin: -10px 0 16px; min-height: 16px; }
+  .hidden { display: none !important; }
+  .zone-badge { display: inline-block; padding: 5px 14px; border-radius: 999px; color: #fff; font-weight: 700; font-size: 13px; margin-bottom: 14px; }
+  .dist-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .dist-num { font-size: 40px; font-weight: 800; color: var(--ink-head); line-height: 1; }
+  .dist-unit { font-size: 15px; color: var(--gray-text); font-weight: 600; }
+  .zone-desc { font-size: 14px; color: var(--gray-text); line-height: 1.55; margin: 10px 0 0; }
+  .divider { border: none; border-top: 1px solid var(--rule); margin: 20px 0; }
+  h2.section-h { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--orange-dark); margin: 0 0 12px; }
+  .action-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+  .action-item:last-child { border-bottom: none; }
+  .action-num { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: var(--amber); color: #111; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .action-text { font-size: 14px; line-height: 1.5; }
+  .action-text b { color: var(--ink-head); }
+  .action-text .ref { display: block; margin-top: 3px; font-size: 12px; color: var(--gray-light); font-style: italic; }
+  .footer-note { text-align: center; font-size: 11px; color: var(--gray-light); margin-top: 24px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="topbar"><span><a href="../">← AI Tools Portfolio</a> · by Maria Myers</span><span>Portfolio demo · sample ZIP codes only</span></div>
+<div class="wrap">
+  <div class="brandline">MainEntry · Data Center Opportunity Group</div>
+  <h1 class="title">The Data Center <mark>Impact Calculator</mark></h1>
+  <p class="lede">A ZIP-code based snapshot of your distance from a proposed data center campus in Kansas City's Northland, plus a role-specific 3-step action plan.</p>
+
+  <p class="demo-note"><b>Portfolio demo:</b> this public version uses a handful of sample ZIP codes. The full version covers every Missouri and Kansas ZIP code and is part of the Data Center Opportunity Group at <a href="https://community.mainentry.net" style="color:inherit">community.mainentry.net</a>.</p>
+
+  <div id="inputScreen" class="card">
+    <label for="zipInput">Sample ZIP code</label>
+    <select id="zipInput"></select>
+
+    <label>Which best describes you?</label>
+    <div class="role-grid" id="roleGrid">
+      <button type="button" class="role-btn" data-role="resident"><span class="emoji">🏠</span>Resident / Homeowner</button>
+      <button type="button" class="role-btn" data-role="landowner"><span class="emoji">🌾</span>Landowner</button>
+      <button type="button" class="role-btn" data-role="contractor"><span class="emoji">🛠️</span>Contractor / Trades</button>
+      <button type="button" class="role-btn" data-role="jobseeker"><span class="emoji">💼</span>Job Seeker</button>
+    </div>
+    <div class="err" id="zipErr"></div>
+    <button class="primary" id="calcBtn">Get My Impact Report</button>
+  </div>
+
+  <div id="resultsScreen" class="card hidden">
+    <span id="zoneBadge" class="zone-badge"></span>
+    <div class="dist-row">
+      <span class="dist-num" id="distNum">--</span>
+      <span class="dist-unit">miles from the project site</span>
+    </div>
+    <p class="zone-desc" id="zoneDesc"></p>
+    <hr class="divider">
+    <h2 class="section-h">Your 3-Action Checklist</h2>
+    <div id="actionList"></div>
+  </div>
+  <div id="resultsFooter" class="hidden">
+    <button class="link-btn" id="startOverBtn">Try a different ZIP code or role</button>
+  </div>
+
+  <p class="footer-note">Distance is straight-line ("as the crow flies") from the ZIP code's center point (US Census ZCTA Gazetteer), calculated with the haversine formula. Nothing you pick is stored or sent anywhere. Educational estimate only — not a legal, environmental, or property assessment.</p>
+</div>
+
+<script>
+(function () {
+  var SITE_LAT = 39.320814, SITE_LON = -94.577513; // I-435 & Hwy 169, Smithville / KC North (ZIP 64165 centroid)
+
+  // Sample ZIP centroids (US Census 2023 ZCTA Gazetteer)
+  var ZIPS = {
+    "64165": { name: "64165 · KC North / Smithville area", c: [39.3208, -94.5775] },
+    "64166": { name: "64166 · KC North", c: [39.3222, -94.5230] },
+    "64155": { name: "64155 · Northland", c: [39.2812, -94.5678] },
+    "64118": { name: "64118 · Gladstone", c: [39.2129, -94.5740] },
+    "64068": { name: "64068 · Liberty", c: [39.2583, -94.3897] },
+    "64105": { name: "64105 · Downtown Kansas City, MO", c: [39.1062, -94.5906] },
+    "66101": { name: "66101 · Kansas City, KS", c: [39.1187, -94.6259] },
+    "64801": { name: "64801 · Joplin", c: [37.1069, -94.4976] }
+  };
+
+  function haversineMiles(lat1, lon1, lat2, lon2) {
+    var R = 3958.8, r = function (d) { return d * Math.PI / 180; };
+    var dLat = r(lat2 - lat1), dLon = r(lon2 - lon1);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(r(lat1)) * Math.cos(r(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function zoneFor(miles) {
+    if (miles <= 1.5) return { key: "direct", label: "Direct Impact Zone", color: "var(--zone-direct)",
+      desc: "Close enough that construction noise, truck traffic, and future expansion phases are likely to be visible or audible. This is where showing up to public hearings makes the biggest difference." };
+    if (miles <= 4) return { key: "secondary", label: "Secondary Impact Zone", color: "var(--zone-secondary)",
+      desc: "Close enough that infrastructure work (power lines, water lines, road upgrades) and property-value effects are worth tracking, even if the site isn't visible from your property." };
+    if (miles <= 10) return { key: "regional", label: "Regional Opportunity Zone", color: "var(--zone-regional)",
+      desc: "Direct nuisance impact is unlikely, but you're inside the hiring radius, vendor radius, and regional tax-revenue conversation — often the sweet spot for opportunity with the least disruption." };
+    return { key: "outside", label: "Outside Immediate Radius", color: "var(--zone-outside)",
+      desc: "Outside the immediate footprint. Direct impact is very unlikely, but the region's hiring, contractor demand, and tax-revenue effects can still reach you." };
+  }
+
+  var ACTIONS = {
+    resident: {
+      direct: [["Attend the next planning & zoning meeting", "Public comment windows are your highest-leverage move."], ["Ask about noise enclosure and setback commitments", "Communities elsewhere have won specific buffer and enclosure standards."], ["Keep a dated log of noise, light, or traffic changes", "A dated record is what you need for any future comment or complaint."]],
+      secondary: [["Learn what to watch for: noise, traffic, construction phases", "Know the realistic range of effects before they arrive."], ["Add recurring public meetings to your calendar", "Port authority and county P&Z meetings set the timeline."], ["Watch infrastructure permits (water, power) near you", "These often move faster than zoning hearings and are easy to miss."]],
+      regional: [["Follow where the tax revenue actually lands", "Know what reaches local budgets, not just what's built."], ["Check regional updates monthly", "At this distance, a monthly check-in is plenty."], ["Re-check if a second site or expansion is announced", "Zones shift when projects expand."]],
+      outside: [["Get the background on why data centers are expanding regionally", "Useful if they become a topic in your own area."], ["Follow regional news casually", "Low-effort way to stay informed."], ["Re-run this if you relocate closer to the corridor", "Your zone changes with your ZIP code."]]
+    },
+    landowner: {
+      direct: [["Get your parcel's zoning and any pending rezone requests in writing", "A simple records request to the county covers this."], ["Learn the valuation leverage points before talking to brokers", "Land near an active corridor has specific negotiating factors."], ["Track every filing that touches land use near you", "Port authority and county filings show what's coming."]],
+      secondary: [["Review what research actually shows about property values", "Know the data before talking to a broker or appraiser."], ["Request current zoning and comparable-sale records", "One records request covers both."], ["Watch for power and water easements crossing nearby parcels", "They can affect adjacent land value without any rezone."]],
+      regional: [["Study the regional growth playbook", "Ecosystem growth affects land demand along the corridor."], ["Monitor the published project pipeline periodically", "New sites can create opportunity zones further out."], ["Keep a record of any broker or developer contact", "Useful reference if regional interest grows."]],
+      outside: [["Understand the bigger regional growth picture", "Helps judge whether growth may reach your area."], ["Set a reminder to re-check periodically", "Corridors tend to expand outward in phases."], ["Follow new site announcements", "First-mover awareness matters most for landowners."]]
+    },
+    contractor: {
+      direct: [["Position for vendor and subcontractor opportunities", "Early relationships matter most on large builds."], ["Track active permits for upcoming phases", "Permits reveal the timeline and the issuing bodies."], ["Attend a public meeting to identify the general contractor", "GCs and major subs are often named in hearings."]],
+      secondary: [["Plan your vendor positioning strategy", "Near, not inside, the footprint is still prime territory."], ["Watch for infrastructure-adjacent permits", "Power, water, and road work need trades before the main build."], ["Reach out to named general contractors", "Meeting minutes often name the GC and phase timeline."]],
+      regional: [["Map the broader trades pipeline (facilities techs, etc.)", "Projects like this create a regional labor market."], ["Check the pipeline for additional regional sites", "More distance just means watching a wider net."], ["Network with trades already working the corridor", "Word-of-mouth often moves faster than postings."]],
+      outside: [["Understand the ecosystem effect data centers create", "Useful if you're deciding whether to travel for work."], ["Watch for new site announcements", "A closer opportunity could open in your area."], ["Re-run this if a new site is announced nearer you", "Your zone shifts with each new project."]]
+    },
+    jobseeker: {
+      direct: [["Map in-demand roles: facilities techs, security, operations", "These match what large data centers hire for."], ["Follow a step-by-step positioning plan", "Start now; hiring ramps closer to completion."], ["Watch hearing minutes for the operator and staffing timeline", "Public meetings often preview hiring phases."]],
+      secondary: [["Position now — commuting isn't a barrier at this distance", "Focus on certifications and applications."], ["Look into local training pipelines", "Facilities-tech certifications are often the fastest entry point."], ["Watch for hiring-phase announcements", "They often appear before job postings go live."]],
+      regional: [["Pick your track: technical or second-career", "This distance is a normal commute."], ["Research community college and trade programs", "They're frequently the direct feeder."], ["Set a reminder to check postings as the build progresses", "Hiring ramps near completion, not at groundbreaking."]],
+      outside: [["Decide whether relocating or a longer commute makes sense", "Weigh the real trade-off first."], ["Research regional data-center hiring trends", "Most metros have several projects in the pipeline."], ["Follow hiring-phase announcements", "You'll want a heads-up before postings go wide."]]
+    }
+  };
+
+  var selectedRole = null;
+  var zipInput = document.getElementById("zipInput");
+  Object.keys(ZIPS).forEach(function (z) {
+    var o = document.createElement("option"); o.value = z; o.textContent = ZIPS[z].name; zipInput.appendChild(o);
+  });
+
+  var roleGrid = document.getElementById("roleGrid"), zipErr = document.getElementById("zipErr");
+  roleGrid.addEventListener("click", function (e) {
+    var btn = e.target.closest(".role-btn"); if (!btn) return;
+    roleGrid.querySelectorAll(".role-btn").forEach(function (b) { b.classList.remove("selected"); });
+    btn.classList.add("selected"); selectedRole = btn.getAttribute("data-role"); zipErr.textContent = "";
+  });
+
+  document.getElementById("calcBtn").addEventListener("click", function () {
+    if (!selectedRole) { zipErr.textContent = "Pick which best describes you."; return; }
+    var c = ZIPS[zipInput.value].c;
+    var miles = haversineMiles(c[0], c[1], SITE_LAT, SITE_LON), zone = zoneFor(miles);
+    var badge = document.getElementById("zoneBadge");
+    badge.textContent = zone.label; badge.style.background = zone.color;
+    document.getElementById("distNum").textContent = miles < 10 ? miles.toFixed(1) : Math.round(miles);
+    document.getElementById("zoneDesc").textContent = zone.desc;
+    var list = document.getElementById("actionList"); list.innerHTML = "";
+    ACTIONS[selectedRole][zone.key].forEach(function (a, i) {
+      var row = document.createElement("div"); row.className = "action-item";
+      var num = document.createElement("div"); num.className = "action-num"; num.textContent = i + 1;
+      var txt = document.createElement("div"); txt.className = "action-text";
+      var b = document.createElement("b"); b.textContent = a[0];
+      var ref = document.createElement("span"); ref.className = "ref"; ref.textContent = a[1];
+      txt.append(b, ref); row.append(num, txt); list.appendChild(row);
+    });
+    document.getElementById("inputScreen").classList.add("hidden");
+    document.getElementById("resultsScreen").classList.remove("hidden");
+    document.getElementById("resultsFooter").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("startOverBtn").addEventListener("click", function () {
+    document.getElementById("resultsScreen").classList.add("hidden");
+    document.getElementById("resultsFooter").classList.add("hidden");
+    document.getElementById("inputScreen").classList.remove("hidden");
+  });
+})();
+</script>
+</body>
+</html>

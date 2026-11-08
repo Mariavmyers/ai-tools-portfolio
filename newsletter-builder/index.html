@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QueryTrends Weekly Builder · Maria Myers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0B1220; --panel:#121B2E; --panel-2:#17233B; --line:#26344F; --text:#E7ECF5; --text-dim:#90A0BC; --signal:#C6F135; --signal-dim:#8FA83A; --radius:4px; }
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){ --bg:#F4F6FA; --panel:#FFFFFF; --panel-2:#EDF0F6; --line:#D7DEEA; --text:#10192B; --text-dim:#55617A; --signal:#5B8A00; --signal-dim:#7A9E2A; } }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{ background:var(--bg); color:var(--text); font-family:"IBM Plex Sans",-apple-system,Segoe UI,Roboto,sans-serif; min-height:100vh; }
+  .topbar{ font:13px/1.4 "IBM Plex Sans",system-ui,sans-serif; background:#0B1220; color:#E7ECF5; border-bottom:1px solid #26344F; padding:8px 16px; display:flex; gap:12px; justify-content:space-between; flex-wrap:wrap; }
+  .topbar a{ color:#C6F135; text-decoration:none; font-weight:600; }
+  .wrap{ max-width:980px; margin:0 auto; padding:28px 16px 60px; }
+  .masthead{ display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--text); padding-bottom:14px; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+  .masthead h1{ font-size:26px; margin:0; font-weight:700; }
+  .masthead .tag{ font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--text-dim); }
+  .signal-dot{ color:var(--signal); }
+  .demo-note{ font-size:13.5px; line-height:1.55; color:var(--text-dim); border:1px dashed var(--line); border-radius:var(--radius); padding:10px 14px; margin-bottom:18px; }
+  .demo-note b{ color:var(--text); }
+  .modebar{ display:flex; gap:2px; margin-bottom:18px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; width:fit-content; }
+  .modebar button{ font-family:"IBM Plex Mono",monospace; font-size:13px; padding:10px 18px; border:none; background:var(--panel); color:var(--text-dim); cursor:pointer; }
+  .modebar button.active{ background:var(--signal); color:#0B1220; font-weight:600; }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:760px){ .grid{ grid-template-columns:1fr; } }
+  .panel{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px; min-width:0; }
+  .panel h2{ font-size:12.5px; font-family:"IBM Plex Mono",monospace; color:var(--text-dim); margin:0 0 14px; text-transform:uppercase; letter-spacing:.02em; }
+  .mode-view{ display:none; } .mode-view.active{ display:block; }
+  .copy{ color:var(--text-dim); font-size:14px; line-height:1.6; margin:0 0 18px; } .copy b{ color:var(--text); }
+  label{ display:block; font-size:12.5px; font-family:"IBM Plex Mono",monospace; color:var(--text-dim); margin:14px 0 6px; }
+  input[type="text"], textarea{ width:100%; background:var(--panel-2); border:1px solid var(--line); border-radius:var(--radius); color:var(--text); padding:10px 12px; font-family:inherit; font-size:14px; }
+  textarea{ min-height:70px; resize:vertical; }
+  .btn{ font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600; padding:13px 20px; border-radius:var(--radius); border:none; cursor:pointer; width:100%; margin-top:18px; background:var(--signal); color:#0B1220; }
+  .output-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .output-head h2{ margin:0; }
+  .output-actions button{ font-family:"IBM Plex Mono",monospace; font-size:12px; padding:7px 12px; border-radius:var(--radius); border:1px solid var(--line); background:var(--panel-2); color:var(--text); cursor:pointer; }
+  .output-actions button:disabled{ opacity:.4; cursor:default; }
+  #output{ white-space:pre-wrap; font-size:15px; line-height:1.7; min-height:120px; }
+  #output.placeholder{ color:var(--text-dim); font-size:14px; }
+  .status{ font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--text-dim); margin-top:8px; min-height:16px; }
+  .meta-row{ display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--text-dim); margin-top:14px; border-top:1px solid var(--line); padding-top:10px; }
+</style>
+</head>
+<body>
+<div class="topbar"><span><a href="../">← AI Tools Portfolio</a> · by Maria Myers</span><span>Portfolio demo · sample output</span></div>
+<div class="wrap">
+  <div class="masthead">
+    <h1><span class="signal-dot">■</span> QueryTrends Weekly — Builder</h1>
+    <div class="tag">AEO · DISCOVERABILITY · AI COMPLIANCE</div>
+  </div>
+
+  <p class="demo-note"><b>How it works:</b> the live version sends your topic plus a house-style prompt (plain language, 500–700 words, hook → 2–4 sections → one "do this now" step) to Claude and returns a ready-to-send issue. <b>This public demo shows pre-written sample issues</b> so it runs without an API key.</p>
+
+  <div class="modebar">
+    <button class="active" data-mode="surprise">SURPRISE ME</button>
+    <button data-mode="custom">CUSTOM TOPICS</button>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="mode-view active" id="view-surprise">
+        <h2>Auto-topic mode</h2>
+        <p class="copy">For when you're slammed. One click picks a topic from the beat — <b>AEO/discoverability, AI compliance & security, or dos-and-don'ts</b> — and writes the full issue.</p>
+        <button class="btn" id="btn-surprise">WRITE THIS WEEK'S ISSUE</button>
+      </div>
+      <div class="mode-view" id="view-custom">
+        <h2>Custom build</h2>
+        <label for="topic1">Topic 1 (required)</label>
+        <input type="text" id="topic1" placeholder="e.g. why ChatGPT never cites your site">
+        <label for="notes">Anything else to include</label>
+        <textarea id="notes" placeholder="optional — angle, examples, notes"></textarea>
+        <button class="btn" id="btn-custom">GENERATE NEWSLETTER</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="output-head">
+        <h2>Output — plain text</h2>
+        <div class="output-actions"><button id="btn-copy" disabled>COPY</button></div>
+      </div>
+      <div id="output" class="placeholder">Your newsletter draft appears here. Pick a mode on the left and generate.</div>
+      <div class="status" id="status"></div>
+      <div class="meta-row"><span id="wordcount">0 words</span><span>querytrends.ai</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SAMPLES = [
+`Subject: Your website is talking to AI. Is it saying your name?
+
+When someone asks ChatGPT or Perplexity for "the best family dentist near me," the answer doesn't come from magic. It comes from what those tools can read, understand, and trust about the businesses in your area. If your site doesn't say clearly who you are, what you do, and where you do it, the AI fills the gap with someone else.
+
+What AI tools actually read
+AI assistants pull from your website, your Google Business Profile, directories, and reviews. They look for consistent facts: the same name, address, services, and hours everywhere. When those facts conflict, the AI gets less confident, and less confident usually means "not recommended."
+
+The quiet fix most sites skip
+Structured data (schema) is a hidden label on your pages that tells machines, in their own format, "this is a dental practice, here is the address, here are the services." Visitors never see it. AI tools and search engines read it every time. Most small business sites either don't have it or have it broken.
+
+A second easy win: your homepage title. If it only says your business name, it tells a machine almost nothing. "Family Dentist in Liberty, MO | Smile Co" tells it everything.
+
+What not to do
+Don't stuff pages with keywords or copy AI-written filler. Answer engines reward clear, specific, honest information, the same things a real customer wants.
+
+Do this now
+Search your business name in ChatGPT and Google. Write down every fact that's wrong or missing. That list is your to-do list for this month.`,
+
+`Subject: llms.txt: the small file that tells AI who you are
+
+There's a new file showing up on websites called llms.txt. It's a plain-text summary of your site written for AI assistants: who you are, what you offer, and which pages matter most. It's simple to make, and almost no small businesses have one yet.
+
+What it does
+Think of it as a cover letter for machines. Instead of making an AI tool crawl and guess, you hand it a clean list: your services, your best guides, your contact page. It lives at yourwebsite.com/llms.txt.
+
+What it doesn't do
+It's not a magic ranking switch. No AI company has promised it will boost you, and it won't fix a site that's broken elsewhere. Think of it as good hygiene: cheap, quick, and it removes guesswork.
+
+How to check yours in 10 seconds
+Type yourwebsite.com/llms.txt into a browser. If you see your normal homepage instead of a plain text file, you don't have one. Here's a hidden problem: some sites show a normal page for ANY address that doesn't exist. That's called a soft 404, and it confuses crawlers too. Missing pages should say "not found."
+
+Do's and don'ts
+Do keep it short and factual. Do link only to pages you want found. Don't paste marketing slogans or claims you can't back up.
+
+Do this now
+Check yourwebsite.com/llms.txt and a made-up address like yourwebsite.com/xyz123. If either shows your homepage, add both fixes to your web person's list this week.`
+];
+
+let idx = 0;
+const outputEl = document.getElementById('output'), statusEl = document.getElementById('status'),
+      wcEl = document.getElementById('wordcount'), copyBtn = document.getElementById('btn-copy');
+
+document.querySelectorAll('.modebar button').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.modebar button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.mode-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + btn.dataset.mode).classList.add('active');
+}));
+
+function show(text, note){
+  outputEl.classList.remove('placeholder');
+  outputEl.textContent = '';
+  statusEl.textContent = 'writing…';
+  setTimeout(() => {
+    outputEl.textContent = text;
+    wcEl.textContent = text.trim().split(/\s+/).length + ' words';
+    copyBtn.disabled = false;
+    statusEl.textContent = note;
+  }, 500);
+}
+
+document.getElementById('btn-surprise').addEventListener('click', () => {
+  show(SAMPLES[idx % SAMPLES.length], 'sample issue ' + (idx % SAMPLES.length + 1) + ' of ' + SAMPLES.length + ' (demo)');
+  idx++;
+});
+document.getElementById('btn-custom').addEventListener('click', () => {
+  const t = document.getElementById('topic1').value.trim();
+  if (!t) { statusEl.textContent = 'Topic 1 is required.'; return; }
+  show(SAMPLES[idx % SAMPLES.length], 'demo: showing a sample issue. The live version writes about "' + t + '".');
+  idx++;
+});
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(outputEl.textContent); statusEl.textContent = 'copied.'; }
+  catch (e) { statusEl.textContent = 'copy failed — select the text manually.'; }
+});
+</script>
+</body>
+</html>
