@@ -17,7 +17,9 @@ Asks Meta's Muse Spark Open the same medical, legal or finance question in Engli
 | 📰 **QueryTrends Weekly Builder** | One-click newsletter writer for an AI-discoverability consultancy, with a fixed house style. | [Try it](https://mariavmyers.github.io/ai-tools-portfolio/newsletter-builder/) |
 | 🎬 **LinguaCheck Recording Guide** | Shot list + scrolling teleprompter used to record the LinguaCheck hackathon demo. | [Open](https://mariavmyers.github.io/ai-tools-portfolio/linguacheck-recording-guide/) |
 
-Also see **[QueryTrends X-Ray](https://github.com/Mariavmyers/querytrends-social)**, a website scanner + multilingual post scheduler built on the Blotato API.
+Also see **[QueryTrends X-Ray](https://github.com/Mariavmyers/querytrends-social)**, a website scanner + multilingual post scheduler built on the Blotato API. The same repo includes:
+- 📣 **AdXR**: writes EN/ES/PT-BR ads from the *structure* of winning ads (never the words) and tests them free as organic posts through Blotato.
+- 🏡 **AdSuperXR · Real Estate**: finds public "looking for a home" posts, matches each need to an investor's property list, and produces a client report that keeps buyers anonymous until they agree to an introduction.
 
 ## Honest labels
 - **Verdict Bench** uses *demo scoring*: scores come from built-in text-signal rules, not live AI calls. The brand (Aurora Motors) and all responses are fictional.
