@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AdXR · QueryTrends</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --panel: #ffffff; --ink: #1c1b19; --muted: #6b675f; --line: #e3dfd5;
+    --accent: #0f6e5c; --accent-ink: #ffffff; --gold: #a8790f; --bad: #b42318; --ok: #067647;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #121211; --panel: #1b1b19; --ink: #f1efe9; --muted: #a29d93; --line: #2e2d2a; --accent: #3fb59c; --accent-ink: #0c1f1b; --gold: #e0b34a; --bad: #f97066; --ok: #47cd89; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 28px 16px 80px; }
+  nav { font-size: 14px; margin-bottom: 14px; }
+  nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  h1 { font-size: 30px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--muted); margin: 0 0 6px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 18px; }
+  section h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 6px; }
+  .hint { font-size: 13.5px; color: var(--muted); margin: 0 0 12px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  input[type=text], input[type=number], input[type=datetime-local], select, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; }
+  input[type=text] { flex: 1 1 220px; min-width: 0; }
+  textarea { width: 100%; min-height: 150px; resize: vertical; font-size: 14px; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 9px 15px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  button:disabled { opacity: .5; cursor: wait; }
+  label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .grid label { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  .grid input[type=text], label.chk input[type=text] { flex: none; width: 100%; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .tabs button { background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 6px 12px; }
+  .tabs button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .blueprint { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+  .pill { font: 12px var(--mono); padding: 4px 10px; border-radius: 99px; background: var(--bg); border: 1px solid var(--line); }
+  .pill.hook { border-color: var(--gold); color: var(--gold); }
+  ul.why { margin: 6px 0 0; padding-left: 18px; font-size: 14px; }
+  .ad { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin: 14px 0; }
+  .ad .meta { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font: 12px var(--mono); color: var(--muted); margin-bottom: 8px; }
+  .score { font-weight: 700; }
+  .score.good { color: var(--ok); } .score.mid { color: var(--gold); } .score.low { color: var(--bad); }
+  ul.checks { list-style: none; margin: 6px 0 10px; padding: 0; font-size: 13px; }
+  ul.checks li.no { color: var(--bad); } ul.checks li.yes { color: var(--ok); }
+  .msg { font-size: 14px; margin-top: 8px; }
+  .msg.err { color: var(--bad); } .msg.ok { color: var(--ok); }
+  .plan { font-size: 14px; line-height: 1.6; }
+  .plan b { color: var(--accent); }
+  .hidden { display: none; }
+  a.lnk { color: var(--accent); font-weight: 600; }
+#account,#page{display:none}</style>
+</head>
+<body>
+<main>
+<div style="background:#fff7e0;border:1px solid #e8c766;color:#5a4500;border-radius:10px;padding:10px 14px;margin:0 0 16px;font-size:14px">🌐 <b>Web version.</b> Everything you enter is saved only in this browser on this computer. Nothing is uploaded.</div>
+  <nav><a href="../">← Portfolio</a> · <a href="../adsuperxr/">AdSuperXR · Real Estate →</a></nav>
+  <h1>Ad<span>XR</span></h1>
+  <p class="sub">X-Ray a winning ad's structure → write your ad for your target lead in EN / ES / PT → test free → pay only for the winner.</p>
+
+  <section>
+    <h2>1 · Find a winning ad</h2>
+    <p class="hint">Ads that have run <b>30+ days</b> are usually profitable: advertisers stop paying for ads that don't work. These are free, official ad libraries.</p>
+    <div class="row">
+      <input id="kw" type="text" placeholder="keyword or competitor, e.g. marketing agency, dentist, SEO" />
+      <button class="ghost" id="findBtn" type="button">Open ad libraries</button>
+    </div>
+    <div id="findLinks" class="msg"></div>
+  </section>
+
+  <section>
+    <h2>2 · X-Ray its structure</h2>
+    <p class="hint">Paste the ad's text. AdXR copies the <b>structure only</b>, never the words.</p>
+    <textarea id="adText" placeholder="Paste the winning ad's text here…"></textarea>
+    <div class="row" style="margin-top:10px">
+      <label class="chk">Days running <input id="days" type="number" min="0" style="width:90px" placeholder="45" /></label>
+      <button id="xrayBtn" type="button">X-Ray this ad</button>
+    </div>
+    <div id="xrayMsg" class="msg"></div>
+    <div id="xray" class="hidden">
+      <div class="blueprint" id="bp"></div>
+      <ul class="why" id="why"></ul>
+    </div>
+  </section>
+
+  <section id="targetSec" class="hidden">
+    <h2>3 · Your target lead</h2>
+    <p class="hint">Who should this ad bring you? Pre-filled for QueryTrends leads. Edit each language so the ad reads naturally.</p>
+    <div class="tabs" id="langTabs">
+      <button type="button" data-l="en" class="on">English</button>
+      <button type="button" data-l="es">Español</button>
+      <button type="button" data-l="pt">Português</button>
+    </div>
+    <div class="grid" id="fields"></div>
+    <div class="row" style="margin-top:12px">
+      <label style="display:block;flex:1 1 100%;font-size:13px;color:var(--soft)">Lead link (where people get the free offer)
+        <input id="link" type="text" style="width:100%" placeholder="e.g. https://wa.me/1816XXXXXXX or your Messenger link" />
+      </label>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <label class="chk"><input type="checkbox" name="lang" value="en" checked /> English</label>
+      <label class="chk"><input type="checkbox" name="lang" value="es" checked /> Español</label>
+      <label class="chk"><input type="checkbox" name="lang" value="pt" checked /> Português</label>
+      <label class="chk"><input type="checkbox" id="combine" checked /> All languages in one post</label>
+      <label class="chk" id="polishWrap"><input type="checkbox" id="polish" /> Polish with Claude</label>
+      <button id="genBtn" type="button">Write my ads</button>
+    </div>
+    <div id="genMsg" class="msg"></div>
+  </section>
+
+  <section id="adsSec" class="hidden">
+    <h2>4 · Test free, then pay for the winner</h2>
+    <p class="plan">Each version uses a <b>different hook</b>. Version A copies the winner's hook; B and C test new ones.<br>
+      <b>Step 1:</b> post each version free (one per day, below). <b>Step 2:</b> after 48 hours, compare comments, clicks and shares in Blotato → Analytics.
+      <b>Step 3:</b> put ad money only behind the winner. Start small and raise it only if leads come in.</p>
+    <div class="row">
+      <select id="account"><option value="">Loading accounts…</option></select>
+      <select id="page" class="hidden"></select>
+    </div>
+    <div id="accountMsg" class="msg"></div>
+    <div id="ads"></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  const KEY = 'adsuperxr-data';
+  const shims = {
+    fs: {
+      readFileSync() { let v = null; try { v = localStorage.getItem(KEY); } catch (e) {} if (v == null) throw new Error('empty'); return v; },
+      writeFileSync(_f, d) { try { localStorage.setItem(KEY, d); } catch (e) {} },
+      mkdirSync() {}, existsSync() { try { return localStorage.getItem(KEY) != null; } catch (e) { return false; } },
+    },
+    path: { join: (...a) => a.join('/') },
+    './log': { info() {}, warn() {}, error() {} },
+    './env': {},
+  };
+  const defs = {}, cache = {};
+  defs["./adxr"] = function (module, exports, require, __dirname) {
+// AdXR — "X-Ray" a winning ad's STRUCTURE (never its words), then write new ads
+// in that structure for YOUR target lead, in English, Spanish and Portuguese.
+//
+// Why: advertisers keep paying only for ads that convert, so an ad that has run
+// for weeks is a proven structure. Starting from a proven structure means less
+// money wasted testing bad ads.
+const env = require('./env');
+const log = require('./log');
+
+const LANGS = ['en', 'es', 'pt'];
+const SECTIONS = ['hook', 'pain', 'proof', 'offer', 'cta'];
+
+// ---------- 1. X-Ray: break a winning ad into its structure ----------
+const RX = {
+  question: /\?/,
+  number: /\b\d+([.,]\d+)?\s*(%|x|k|\+|days?|weeks?|minutes?|steps?|ways?|tips?|clients?|customers?|leads?|calls?|stars?|reviews?|years?)?\b|\$\s?\d/i,
+  callout: /\b(attention|calling all|if you('re| are)? an?|for|hey)\b.{0,40}\b(owners?|founders?|moms?|dads?|business(es)?|coaches?|agents?|dentists?|lawyers?|contractors?|restaurants?|realtors?|clinics?)\b/i,
+  pain: /\b(tired of|struggl|stop|stuck|losing|lose|waste|wasting|frustrat|hard to|can'?t|cannot|no one|nobody|without|problem|mistake|worried|overwhelm|behind|invisible|ignored)\w*/i,
+  proof: /(\b(helped|served|worked with|trusted by|loved by|join(ed)?|testimonial|case study|results?|proven|rated|featured|award|as seen|certified|guarantee[d]?)\b|\d[\d,.]*\s*\+?\s*(k\s+)?[a-z]+s\b|★|⭐)/i,
+  offer: /\b(free|bonus|discount|\d+%\s*off|off\b|trial|limited|only \d+|today only|save|get your|claim|no cost|zero cost|risk[- ]free)\b/i,
+  cta: /\b(click|tap|book|call|sign up|signup|register|join|download|get started|learn more|shop|order|apply|dm|message|comment|visit|schedule|grab|claim|start)\b/i,
+  urgency: /\b(today|now|limited|only \d+|ends|last chance|before|deadline|spots? left|this week)\b/i,
+};
+
+function splitLines(text) {
+  return String(text || '')
+    .replace(/\r/g, '')
+    .split(/\n+|(?<=[.!?])\s+(?=[A-Z¿¡"“👉✅❌⚠️🔥])/u)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function classifyHook(line) {
+  if (RX.callout.test(line)) return 'callout';
+  if (RX.question.test(line)) return 'question';
+  if (RX.number.test(line)) return 'number';
+  if (RX.pain.test(line)) return 'pain';
+  return 'bold';
+}
+
+function analyzeAd(text, { daysRunning } = {}) {
+  const raw = String(text || '').trim();
+  if (raw.length < 20) throw new Error('Paste the full text of a winning ad (at least one or two sentences).');
+  const lines = splitLines(raw);
+  const order = ['hook'];
+  const found = { hook: [lines[0]] };
+  for (const line of lines.slice(1)) {
+    let section = null;
+    if (RX.cta.test(line) && /\b(link|below|now|today|here|👇|→)/i.test(line + ' ')) section = 'cta';
+    else if (RX.offer.test(line)) section = 'offer';
+    else if (RX.proof.test(line)) section = 'proof';
+    else if (RX.pain.test(line)) section = 'pain';
+    else if (/^\W*(click|tap|book|call|sign up|register|join|download|get started|learn more|shop|order|apply|dm|message|comment|visit|grab|claim|start)\b/i.test(line)) section = 'cta';
+    if (!section) continue;
+    (found[section] = found[section] || []).push(line);
+    if (!order.includes(section)) order.push(section);
+  }
+  // The call to action always closes the ad.
+  if (order.includes('cta')) order.splice(order.indexOf('cta'), 1);
+  order.push('cta');
+
+  const words = raw.split(/\s+/).length;
+  const emoji = (raw.match(/\p{Extended_Pictographic}/gu) || []).length;
+  const blueprint = {
+    hookType: classifyHook(lines[0]),
+    order,
+    hasUrgency: RX.urgency.test(raw),
+    length: words < 40 ? 'short' : words < 110 ? 'medium' : 'long',
+    words,
+    emoji: emoji === 0 ? 'none' : emoji <= 3 ? 'light' : 'heavy',
+    lineBreaks: (raw.match(/\n/g) || []).length >= 3,
+    firstLineChars: lines[0].length,
+    daysRunning: Number(daysRunning) || null,
+  };
+  const why = [];
+  why.push(`Opens with a ${HOOK_LABEL[blueprint.hookType]} hook (${blueprint.firstLineChars} characters).`);
+  why.push(`Structure: ${blueprint.order.map((s) => SECTION_LABEL[s]).join(' → ')}.`);
+  if (blueprint.hasUrgency) why.push('Uses urgency (a reason to act now).');
+  why.push(`${cap(blueprint.length)} copy (${words} words), ${{ none: 'no', light: 'a little', heavy: 'lots of' }[blueprint.emoji]} emoji${blueprint.lineBreaks ? ', short lines' : ''}.`);
+  if (blueprint.daysRunning >= 30) why.push(`Running ${blueprint.daysRunning}+ days: a strong sign it's profitable.`);
+  else if (blueprint.daysRunning) why.push(`Running ${blueprint.daysRunning} days. Ads running 30+ days are safer to model.`);
+  log.info('adxr.analyzed', { hookType: blueprint.hookType, order: blueprint.order, words });
+  return { blueprint, why };
+}
+
+const HOOK_LABEL = { callout: 'call-out', question: 'question', number: 'number', pain: 'pain-point', bold: 'bold-claim' };
+const SECTION_LABEL = { hook: 'Hook', pain: 'Pain', proof: 'Proof', offer: 'Offer', cta: 'Call to action' };
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// ---------- 2. Write new ads in that structure ----------
+// Phrase banks. {audience} {city} {pain} {outcome} {offer} {proof} {link} come from the target lead.
+const BANK = {
+  en: {
+    hook: {
+      callout: ['{Audience} in {city}: this one is for you 👇', 'Calling all {audience} in {city}.'],
+      question: ['Why do your customers find your competitors first?', 'Is {pain} costing you customers?'],
+      number: ['3 reasons {audience} lose customers to AI search 👇', '60 seconds could show you why {pain}.'],
+      pain: ['Tired of {pain}?', 'Most {audience} don\'t know {pain}.'],
+      bold: ['Your next customer is asking AI who to call. Is it you?', '{Outcome} starts with one free check.'],
+    },
+    pain: ['Right now, {pain}. Every day that costs you calls.', 'When {pain}, customers pick someone else.'],
+    proof: ['{Proof}.', 'Real results: {proof}.'],
+    offer: ['Get a {offer}. No cost, no catch.', 'This week: a {offer} for {audience} in {city}.'],
+    cta: ['👉 Get yours: {link}', 'Tap the link and get started: {link}'],
+    urgency: 'Only a few spots this week.',
+  },
+  es: {
+    hook: {
+      callout: ['{Audience} en {city}: esto es para ustedes 👇', 'Atención, {audience} de {city}.'],
+      question: ['¿Por qué sus clientes encuentran primero a la competencia?', '¿{Pain} le está costando clientes?'],
+      number: ['3 razones por las que {audience} pierden clientes en la búsqueda con IA 👇', '60 segundos pueden mostrarle por qué {pain}.'],
+      pain: ['¿Cansado de que {pain}?', 'La mayoría de {audience} no sabe que {pain}.'],
+      bold: ['Su próximo cliente le pregunta a la IA a quién llamar. ¿Es usted?', '{Outcome} empieza con un análisis gratis.'],
+    },
+    pain: ['Hoy {pain}, y cada día eso le cuesta llamadas.', 'Cuando {pain}, los clientes eligen a otro.'],
+    proof: ['{Proof}.', 'Resultados reales: {proof}.'],
+    offer: ['Obtenga un {offer}. Sin costo y sin trucos.', 'Esta semana: {offer} para {audience} en {city}.'],
+    cta: ['👉 Pídalo aquí: {link}', 'Toque el enlace y empiece: {link}'],
+    urgency: 'Solo quedan pocos cupos esta semana.',
+  },
+  pt: {
+    hook: {
+      callout: ['{Audience} em {city}: isto é para vocês 👇', 'Atenção, {audience} de {city}.'],
+      question: ['Por que seus clientes encontram a concorrência primeiro?', '{Pain} está custando clientes para você?'],
+      number: ['3 motivos pelos quais {audience} perdem clientes na busca com IA 👇', '60 segundos podem mostrar por que {pain}.'],
+      pain: ['Cansado de ver que {pain}?', 'A maioria dos {audience} não sabe que {pain}.'],
+      bold: ['Seu próximo cliente está perguntando para a IA quem chamar. É você?', '{Outcome} começa com uma análise grátis.'],
+    },
+    pain: ['Hoje {pain}, e todo dia isso custa ligações.', 'Quando {pain}, os clientes escolhem outro.'],
+    proof: ['{Proof}.', 'Resultados reais: {proof}.'],
+    offer: ['Receba uma {offer}. Sem custo e sem pegadinha.', 'Esta semana: {offer} para {audience} em {city}.'],
+    cta: ['👉 Peça a sua: {link}', 'Toque no link e comece: {link}'],
+    urgency: 'Poucas vagas esta semana.',
+  },
+};
+
+const HOOK_TYPES = ['callout', 'question', 'number', 'pain', 'bold'];
+
+function fill(tpl, t) {
+  return tpl.replace(/\{(\w+)\}/g, (_, key) => {
+    const v = t[key.toLowerCase()] || '';
+    return key[0] === key[0].toUpperCase() ? cap(v) : v;
+  });
+}
+
+function targetFor(lang, target) {
+  const base = target[lang] || {};
+  const t = { ...base, link: target.link === undefined ? 'https://querytrends.ai/free-snapshot' : String(target.link).trim() };
+  const missing = ['audience', 'pain', 'offer'].filter((k) => !String(t[k] || '').trim());
+  if (!t.link) missing.push('lead link (your WhatsApp or Messenger link)');
+  return { t, missing };
+}
+
+// Meta shows ~125 characters of primary text before "See more".
+function scoreAd(text, blueprint) {
+  const first = text.split('\n')[0];
+  const checks = [
+    { ok: first.length <= 125, label: `Hook fits before "See more" (${first.length}/125 characters)` },
+    { ok: /https?:\/\//.test(text), label: 'Has a link to capture the lead' },
+    { ok: /👉|\b(click|tap|book|call|get|pida|pídalo|toque|reserve|llame|peça|toque|clique|agende|ligue)\b/i.test(text), label: 'Has a clear call to action' },
+    { ok: !blueprint.order.includes('offer') || RX.offer.test(text) || /grat|free/i.test(text), label: 'Keeps the offer from the winning structure' },
+    { ok: text.split(/\s+/).length <= 130, label: 'Short enough to read on a phone' },
+  ];
+  return { score: Math.round((checks.filter((c) => c.ok).length / checks.length) * 100), checks };
+}
+
+function writeVariant(lang, blueprint, t, hookType, idx) {
+  const b = BANK[lang];
+  const parts = [];
+  for (const section of blueprint.order) {
+    if (section === 'hook') parts.push(fill(b.hook[hookType][idx % 2], t));
+    else if (section === 'proof') { if (t.proof) parts.push(fill(b.proof[idx % 2], t)); }
+    else if (section === 'cta') {
+      if (blueprint.hasUrgency) parts.push(b.urgency);
+      parts.push(fill(b.cta[idx % 2], t));
+    } else parts.push(fill(b[section][idx % 2], t));
+  }
+  return parts.join(blueprint.lineBreaks || blueprint.length !== 'long' ? '\n\n' : ' ');
+}
+
+async function polishWithClaude(text, lang, blueprint) {
+  if (!env.ANTHROPIC_API_KEY) return null;
+  const language = { en: 'English', es: 'Latin American Spanish', pt: 'Brazilian Portuguese' }[lang];
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: env.ANTHROPIC_MODEL,
+        max_tokens: 500,
+        messages: [{ role: 'user', content: `Rewrite this Facebook ad in natural, persuasive ${language}. Keep the same section order (${blueprint.order.join(' → ')}), keep the first line under 125 characters, keep the link exactly, and do not add facts, numbers or claims. Return only the ad.\n\n${text}` }],
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error?.message || `HTTP ${res.status}`);
+    return (data.content || []).map((c) => c.text || '').join('').trim() || null;
+  } catch (err) {
+    log.warn('adxr.polish_failed', { lang, error: err.message });
+    return null;
+  }
+}
+
+async function generateAds(blueprint, target = {}, { langs = ['en'], count = 3, polish = false } = {}) {
+  if (!blueprint || !Array.isArray(blueprint.order)) throw new Error('X-Ray a winning ad first.');
+  const chosen = langs.filter((l) => LANGS.includes(l));
+  if (!chosen.length) throw new Error('Pick at least one language.');
+  // Variant 1 copies the winner's hook type; the rest test other hook types.
+  const hooks = [blueprint.hookType, ...HOOK_TYPES.filter((h) => h !== blueprint.hookType)].slice(0, Math.min(Math.max(count, 1), 5));
+  const ads = [];
+  const skipped = [];
+  for (const lang of chosen) {
+    const { t, missing } = targetFor(lang, target);
+    if (missing.length) { skipped.push({ lang, missing }); continue; }
+    for (let i = 0; i < hooks.length; i++) {
+      let text = writeVariant(lang, blueprint, t, hooks[i], i);
+      let polished = false;
+      if (polish) {
+        const better = await polishWithClaude(text, lang, blueprint);
+        if (better) { text = better; polished = true; }
+      }
+      ads.push({
+        id: `${lang}-${i + 1}`,
+        lang,
+        variant: String.fromCharCode(65 + i),
+        hookType: hooks[i],
+        text,
+        shortText: text.length <= 280 ? text : text.split('\n\n').filter((p, k, arr) => k === 0 || k === arr.length - 1).join('\n\n').slice(0, 280),
+        firstComment: null,
+        polished,
+        ...scoreAd(text, blueprint),
+      });
+    }
+  }
+  log.info('adxr.generated', { count: ads.length, langs: chosen, skipped });
+  return { ads, skipped };
+}
+
+// Ready-made target for QueryTrends leads, in all three languages.
+const PRESETS = {
+  realestate: {
+    link: '', // your WhatsApp or Messenger link — required
+    en: { audience: 'home buyers', city: 'Kansas City Northland', pain: 'the good homes sell before you even see them', outcome: 'a home that fits your budget', offer: 'free list of homes that match what you need', proof: '' },
+    es: { audience: 'compradores de casa', city: 'Kansas City Northland', pain: 'las buenas casas se venden antes de que usted las vea', outcome: 'una casa dentro de su presupuesto', offer: 'lista gratis de casas que coinciden con lo que busca', proof: '' },
+    pt: { audience: 'compradores de casa', city: 'Kansas City Northland', pain: 'as boas casas são vendidas antes de você ver', outcome: 'uma casa dentro do seu orçamento', offer: 'lista grátis de casas que combinam com o que você procura', proof: '' },
+  },
+  querytrends: {
+    link: 'https://querytrends.ai/free-snapshot',
+    en: { audience: 'local business owners', city: 'Kansas City', pain: 'ChatGPT and Google can\'t find your business', outcome: 'more calls from local customers', offer: 'free AI-visibility scan', proof: '' },
+    es: { audience: 'dueños de negocios locales', city: 'Kansas City', pain: 'ChatGPT y Google no encuentran su negocio', outcome: 'más llamadas de clientes locales', offer: 'análisis gratis de visibilidad en IA', proof: '' },
+    pt: { audience: 'donos de negócios locais', city: 'Kansas City', pain: 'o ChatGPT e o Google não encontram seu negócio', outcome: 'mais ligações de clientes locais', offer: 'análise grátis de visibilidade em IA', proof: '' },
+  },
+};
+
+// Where to find proven ads — free, official pages (no scraping).
+function findWinnersLinks(keyword, country = 'US') {
+  const q = encodeURIComponent(String(keyword || '').trim());
+  return {
+    metaAdLibrary: `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=${encodeURIComponent(country)}&media_type=all&search_type=keyword_unordered&q=${q}`,
+    tiktokTopAds: 'https://ads.tiktok.com/business/creativecenter/inspiration/topads/pc/en',
+    linkedinAdLibrary: `https://www.linkedin.com/ad-library/search?keyword=${q}`,
+  };
+}
+
+module.exports = { analyzeAd, generateAds, scoreAd, findWinnersLinks, PRESETS, LANGS };
+
+};
+  function req(n) {
+    if (n in shims) return shims[n];
+    if (cache[n]) return cache[n].exports;
+    const module = { exports: {} }; cache[n] = module;
+    defs[n](module, module.exports, req, '.');
+    return module.exports;
+  }
+  window.__req = req;
+})();
+</script>
+<script>
+const $ = (id) => document.getElementById(id);
+const LANG_FLAG = { en: '🇺🇸', es: '🇪🇸', pt: '🇧🇷' };
+const FIELDS = [
+  ['audience', 'Who (audience)'], ['city', 'Where (city)'], ['pain', 'Their pain'],
+  ['outcome', 'Result they want'], ['offer', 'Your free offer'], ['proof', 'Proof (optional)'],
+];
+let blueprint = null, target = null, current = 'en', accounts = [];
+
+async function api(path, body) {
+  const adxr = window.__req('./adxr'); const b = body || {};
+  if (path === '/api/adxr/presets') return { presets: adxr.PRESETS, polishAvailable: false };
+  if (path === '/api/adxr/find') return adxr.findWinnersLinks(b.keyword, b.country);
+  if (path === '/api/adxr/analyze') return adxr.analyzeAd(b.text, { daysRunning: b.daysRunning });
+  if (path === '/api/adxr/generate') return adxr.generateAds(b.blueprint, b.target, { langs: b.langs, count: b.count, combine: b.combine });
+  if (path.startsWith('/api/accounts') || path === '/api/schedule') throw new Error('Web version: copy the ad text and post it yourself, or schedule it free from the desktop app (QueryTrends X-Ray icon).');
+  throw new Error('Not available in the web version.');
+}
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v; else n.setAttribute(k, v); }
+  kids.flat().forEach((k) => k != null && n.append(k));
+  return n;
+}
+function say(id, text, kind = '') { $(id).textContent = text; $(id).className = 'msg ' + kind; }
+function dayAt(dayIndex, hour) {
+  const d = new Date(); d.setDate(d.getDate() + 1 + dayIndex); d.setHours(hour, 0, 0, 0);
+  const p = (x) => String(x).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+// ---- Step 1: free ad libraries ----
+$('findBtn').addEventListener('click', async () => {
+  try {
+    const l = await api('/api/adxr/find', { keyword: $('kw').value });
+    const box = $('findLinks'); box.replaceChildren();
+    box.append(el('a', { class: 'lnk', href: l.metaAdLibrary, target: '_blank', rel: 'noopener', text: 'Meta Ad Library (Facebook + Instagram) ↗' }), ' · ',
+      el('a', { class: 'lnk', href: l.tiktokTopAds, target: '_blank', rel: 'noopener', text: 'TikTok Top Ads ↗' }), ' · ',
+      el('a', { class: 'lnk', href: l.linkedinAdLibrary, target: '_blank', rel: 'noopener', text: 'LinkedIn Ad Library ↗' }),
+      el('div', { class: 'hint', style: 'margin-top:6px', text: 'Tip: open an ad whose "Started running on" date is 30+ days ago, copy its text, and paste it in step 2.' }));
+  } catch (e) { say('findLinks', e.message, 'err'); }
+});
+
+// ---- Step 2: X-Ray ----
+$('xrayBtn').addEventListener('click', async () => {
+  $('xrayBtn').disabled = true; say('xrayMsg', '');
+  try {
+    const r = await api('/api/adxr/analyze', { text: $('adText').value, daysRunning: $('days').value });
+    blueprint = r.blueprint;
+    const bp = $('bp'); bp.replaceChildren();
+    blueprint.order.forEach((s, i) => {
+      if (i) bp.append(el('span', { class: 'pill', text: '→' }));
+      bp.append(el('span', { class: 'pill' + (s === 'hook' ? ' hook' : ''), text: s === 'hook' ? 'Hook (' + blueprint.hookType + ')' : ({ pain: 'Pain', proof: 'Proof', offer: 'Offer', cta: 'Call to action' })[s] }));
+    });
+    $('why').replaceChildren(...r.why.map((w) => el('li', { text: w })));
+    $('xray').classList.remove('hidden'); $('targetSec').classList.remove('hidden');
+  } catch (e) { say('xrayMsg', e.message, 'err'); }
+  $('xrayBtn').disabled = false;
+});
+
+// ---- Step 3: target lead ----
+function saveFields() {
+  if (!target) return;
+  FIELDS.forEach(([k]) => { const i = $('f_' + k); if (i) target[current][k] = i.value; });
+  target.link = $('link').value;
+}
+function showFields(lang) {
+  saveFields(); current = lang;
+  document.querySelectorAll('#langTabs button').forEach((b) => b.classList.toggle('on', b.dataset.l === lang));
+  $('fields').replaceChildren(...FIELDS.map(([k, label]) => {
+    const i = el('input', { type: 'text', id: 'f_' + k }); i.value = (target[lang] || {})[k] || '';
+    return el('label', {}, label, i);
+  }));
+}
+document.querySelectorAll('#langTabs button').forEach((b) => b.addEventListener('click', () => showFields(b.dataset.l)));
+
+api('/api/adxr/presets').then((r) => {
+  const want = new URLSearchParams(location.search).get('preset');
+  target = JSON.parse(JSON.stringify(r.presets[want] || r.presets.querytrends));
+  $('link').value = target.link; showFields('en');
+  if (!r.polishAvailable) { $('polish').disabled = true; $('polishWrap').style.opacity = .5; $('polishWrap').title = 'Add ANTHROPIC_API_KEY to .env to enable (paid)'; }
+}).catch(() => say('genMsg', 'Server not reachable. Is the black window running?', 'err'));
+
+// ---- Step 4: write + schedule ----
+function combineByVariant(ads) {
+  const out = {};
+  ads.forEach((a) => { (out[a.variant] = out[a.variant] || []).push(a); });
+  return Object.entries(out).map(([variant, group]) => ({
+    variant, lang: group.map((g) => g.lang).join('+'), hookType: group[0].hookType,
+    text: group.map((g) => LANG_FLAG[g.lang] + '\n' + g.text).join('\n\n— — —\n\n'),
+    shortText: (group.find((g) => g.lang === 'en') || group[0]).shortText,
+    score: Math.min(...group.map((g) => g.score)), checks: group[0].checks,
+  }));
+}
+
+$('genBtn').addEventListener('click', async () => {
+  saveFields();
+  const langs = [...document.querySelectorAll('input[name=lang]:checked')].map((c) => c.value);
+  $('genBtn').disabled = true; say('genMsg', 'Writing…');
+  try {
+    const r = await api('/api/adxr/generate', { blueprint, target, langs, count: 3, polish: $('polish').checked });
+    const skipped = r.skipped.map((s) => s.lang.toUpperCase() + ' (fill in: ' + s.missing.join(', ') + ')');
+    say('genMsg', skipped.length ? 'Skipped ' + skipped.join('; ') : '', skipped.length ? 'err' : '');
+    const list = $('combine').checked && langs.length > 1 ? combineByVariant(r.ads) : r.ads;
+    renderAds(list);
+    $('adsSec').classList.remove('hidden');
+    if (!accounts.length) loadAccounts();
+    $('adsSec').scrollIntoView({ behavior: 'smooth' });
+  } catch (e) { say('genMsg', e.message, 'err'); }
+  $('genBtn').disabled = false;
+});
+
+function renderAds(list) {
+  const box = $('ads'); box.replaceChildren();
+  const letters = [...new Set(list.map((a) => a.variant))];
+  list.forEach((a) => {
+    const day = letters.indexOf(a.variant);
+    const t = el('textarea'); t.value = a.text;
+    const when = el('input', { type: 'datetime-local' }); when.value = dayAt(day, 9);
+    const btn = el('button', { type: 'button', text: 'Copy text' });
+    const msg = el('div', { class: 'msg' });
+    btn.addEventListener('click', () => schedule(a, t, when, btn, msg));
+    const cls = a.score >= 80 ? 'good' : a.score >= 60 ? 'mid' : 'low';
+    box.append(el('div', { class: 'ad' },
+      el('div', { class: 'meta' }, el('span', { text: 'Version ' + a.variant + ' · ' + a.lang.toUpperCase().replace(/\+/g, ' + ') + ' · ' + a.hookType + ' hook' }), el('span', { class: 'score ' + cls, text: 'Ad score ' + a.score + '%' })),
+      t,
+      el('ul', { class: 'checks' }, a.checks.map((c) => el('li', { class: c.ok ? 'yes' : 'no', text: (c.ok ? '✓ ' : '✗ ') + c.label }))),
+      el('div', { class: 'row' }, when, btn), msg));
+  });
+}
+
+async function loadAccounts() {
+  try {
+    const data = await api('/api/accounts'); accounts = data.accounts;
+    const sel = $('account');
+    sel.replaceChildren(el('option', { value: '', text: accounts.length ? 'Where to test (choose an account)' : 'No accounts — connect them at my.blotato.com' }));
+    accounts.forEach((a) => sel.append(el('option', { value: a.id, text: a.platform + ' · ' + a.name })));
+  } catch (e) { say('accountMsg', e.message, 'err'); }
+}
+$('account').addEventListener('change', async () => {
+  const acc = accounts.find((a) => a.id === $('account').value);
+  const page = $('page'); page.classList.add('hidden'); page.replaceChildren(); say('accountMsg', '');
+  if (!acc || !['facebook', 'linkedin'].includes(acc.platform)) return;
+  try {
+    const { pages } = await api('/api/accounts/' + encodeURIComponent(acc.id) + '/pages');
+    page.append(el('option', { value: '', text: acc.platform === 'facebook' ? 'Choose a Facebook Page (required)' : 'Personal profile (or choose a Company Page)' }));
+    pages.forEach((p) => page.append(el('option', { value: p.id, text: p.name })));
+    page.classList.remove('hidden');
+  } catch (e) { say('accountMsg', e.message, 'err'); }
+});
+
+async function schedule(ad, textEl, whenEl, btn, msg) {
+  const acc = accounts.find((a) => a.id === $('account').value);
+  if (!acc) { msg.textContent = 'Choose where to test first (top of this section).'; msg.className = 'msg err'; return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const text = textEl.value;
+    const r = await api('/api/schedule', {
+      accountId: acc.id, platform: acc.platform, pageId: $('page').value || undefined,
+      post: { text, shortText: text === ad.text ? ad.shortText : text.slice(0, 280) },
+      scheduledTime: whenEl.value ? new Date(whenEl.value).toISOString() : undefined,
+    });
+    msg.textContent = r.dryRun ? 'Dry run OK (nothing posted). ID ' + r.postSubmissionId : 'Scheduled ✓ ' + (r.scheduledTime ? new Date(r.scheduledTime).toLocaleString() : 'publishing now');
+    msg.className = 'msg ok'; btn.textContent = 'Scheduled ✓';
+  } catch (e) { msg.textContent = e.message; msg.className = 'msg err'; btn.disabled = false; btn.textContent = 'Copy text'; }
+}
+</script>
+<script>
+async function loadAccounts() {}
+async function schedule(ad, textEl, whenEl, btn, msg) {
+  try { await navigator.clipboard.writeText(textEl.value); } catch (e) { textEl.select(); document.execCommand('copy'); }
+  msg.textContent = 'Copied ✓ Paste it into your post. To schedule it automatically, use the desktop app.'; msg.className = 'msg ok';
+}
+</script>
+</body>
+</html>

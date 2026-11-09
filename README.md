@@ -15,6 +15,8 @@ Asks Meta's Muse Spark Open the same medical, legal or finance question in Engli
 | ⚖️ **Verdict Bench** | Blind "AI judge" brand audit comparing how global and Latin American AI models describe a brand. Weighted criteria, charts, exportable report. | [Try it](https://mariavmyers.github.io/ai-tools-portfolio/verdict-bench/) |
 | 🏗️ **Data Center Impact Calculator** | ZIP code + role → distance from a proposed data center site (haversine, US Census centroids) and a tailored 3-step action plan. | [Try it](https://mariavmyers.github.io/ai-tools-portfolio/data-center-calculator/) |
 | 📰 **QueryTrends Weekly Builder** | One-click newsletter writer for an AI-discoverability consultancy, with a fixed house style. | [Try it](https://mariavmyers.github.io/ai-tools-portfolio/newsletter-builder/) |
+| 📣 **AdXR** | Writes EN/ES/PT-BR ads from the *structure* of a winning ad (never the words), 3 hooks to test. | [Try it](https://mariavmyers.github.io/ai-tools-portfolio/adxr/) |
+| 🏡 **AdSuperXR · Real Estate** | Finds public "looking for a home" posts, matches needs to a property list, anonymous client report. Data stays in the browser. | [Try it](https://mariavmyers.github.io/ai-tools-portfolio/adsuperxr/) |
 | 🎬 **LinguaCheck Recording Guide** | Shot list + scrolling teleprompter used to record the LinguaCheck hackathon demo. | [Open](https://mariavmyers.github.io/ai-tools-portfolio/linguacheck-recording-guide/) |
 
 Also see **[QueryTrends X-Ray](https://github.com/Mariavmyers/querytrends-social)**, a website scanner + multilingual post scheduler built on the Blotato API. The same repo includes:

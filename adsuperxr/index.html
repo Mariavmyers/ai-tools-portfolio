@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AdSuperXR · Real Estate</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --panel: #ffffff; --ink: #1c1b19; --muted: #6b675f; --line: #e3dfd5;
+    --accent: #0f6e5c; --accent-ink: #ffffff; --gold: #a8790f; --bad: #b42318; --ok: #067647;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #121211; --panel: #1b1b19; --ink: #f1efe9; --muted: #a29d93; --line: #2e2d2a; --accent: #3fb59c; --accent-ink: #0c1f1b; --gold: #e0b34a; --bad: #f97066; --ok: #47cd89; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 28px 16px 80px; }
+  nav { font-size: 14px; margin-bottom: 14px; display: flex; gap: 14px; flex-wrap: wrap; }
+  nav a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  h1 { font-size: 30px; margin: 0 0 4px; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--muted); margin: 0; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 18px; }
+  section h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 6px; }
+  .hint { font-size: 13.5px; color: var(--muted); margin: 0 0 12px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  input, select, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+  textarea { width: 100%; min-height: 110px; resize: vertical; font: 13px var(--mono); }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 9px 15px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  button.small { padding: 4px 10px; font-size: 13px; }
+  button.danger { background: transparent; color: var(--bad); border: 1px solid var(--line); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .grid label { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  .grid label.wide { grid-column: 1 / -1; }
+  .grid input, .grid select { width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .tablewrap { overflow-x: auto; }
+  .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; font-size: 14px; }
+  .links div { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+  .links a { color: var(--accent); font-weight: 600; text-decoration: none; margin-right: 10px; }
+  .reply { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin: 8px 0; font-size: 14px; }
+  .reply b { font: 12px var(--mono); color: var(--muted); }
+  .match { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin: 12px 0; }
+  .match h3 { margin: 0 0 4px; font-size: 17px; }
+  .buyer { display: grid; grid-template-columns: 60px 1fr; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .score { font: 700 18px var(--mono); }
+  .score.good { color: var(--ok); } .score.mid { color: var(--gold); }
+  .tag { font: 11px var(--mono); padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); margin-left: 6px; }
+  .tag.shared { color: var(--ok); border-color: var(--ok); }
+  .muted { color: var(--muted); }
+  .msg { font-size: 14px; margin-top: 8px; }
+  .msg.err { color: var(--bad); } .msg.ok { color: var(--ok); }
+  .flag { background: color-mix(in srgb, var(--gold) 12%, transparent); border-left: 3px solid var(--gold); padding: 10px 12px; border-radius: 0 10px 10px 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+<div style="background:#fff7e0;border:1px solid #e8c766;color:#5a4500;border-radius:10px;padding:10px 14px;margin:0 0 16px;font-size:14px">🌐 <b>Web version.</b> Everything you enter is saved only in this browser on this computer. Nothing is uploaded.</div>
+  <nav><a href="../">← Portfolio</a><a href="../adxr/?preset=realestate">AdXR ads →</a></nav>
+  <h1>Ad<span>SuperXR</span> · Real Estate</h1>
+  <p class="sub">Find the needing → present them to the willing. Buyer details stay private until the buyer agrees to an introduction.</p>
+
+  <section>
+    <h2>1 · Find the need</h2>
+    <p class="hint">Search where people post that they're looking. You read and reply yourself; nothing is copied automatically.</p>
+    <div class="row"><input id="city" value="Kansas City" style="flex:1 1 240px" /><button id="listenBtn" class="ghost" type="button">Show searches</button></div>
+    <div id="listen" class="links" style="margin-top:12px"></div>
+    <div id="extra" class="msg"></div>
+    <div id="replies"></div>
+    <p class="flag" style="margin-top:12px"><b>Group rules first:</b> many Facebook groups ban sales replies. Reply only where it's allowed, be helpful, and never post someone's details anywhere.</p>
+  </section>
+
+  <section>
+    <h2>2 · Log a need you found</h2>
+    <p class="hint">Write down what the person publicly asked for. Don't save phone numbers or emails here.</p>
+    <div class="grid">
+      <label>Platform<select id="n_platform"><option>Facebook group</option><option>Reddit</option><option>Craigslist</option><option>Nextdoor</option><option>Instagram</option><option>TikTok</option><option>Other</option></select></label>
+      <label>Public username (optional)<input id="n_handle" placeholder="u/example" /></label>
+      <label class="wide">Link to the post<input id="n_link" placeholder="https://…" /></label>
+      <label>Area(s) wanted<input id="n_areas" placeholder="Liberty, Kearney" /></label>
+      <label>Max budget<input id="n_budget" placeholder="280k" /></label>
+      <label>Min bedrooms<input id="n_beds" placeholder="3" /></label>
+      <label>Min bathrooms<input id="n_baths" placeholder="2" /></label>
+      <label>When<select id="n_timeline"><option>Now</option><option>1–3 months</option><option>3–6 months</option><option>Just looking</option><option value="">Not said</option></select></label>
+      <label>Paying with<select id="n_financing"><option value="">Not said</option><option>Cash</option><option>Pre-approved loan</option><option>Need help with a loan</option></select></label>
+      <label>Language<select id="n_language"><option>English</option><option>Español</option><option>Português</option></select></label>
+      <label class="wide">What they said (short summary)<input id="n_note" placeholder="Wants a yard, close to schools" /></label>
+    </div>
+    <div class="row" style="margin-top:12px"><button id="addNeedBtn" type="button">Add need</button></div>
+    <div id="needMsg" class="msg"></div>
+    <div class="tablewrap" style="margin-top:12px"><table id="needs"></table></div>
+  </section>
+
+  <section>
+    <h2>3 · The willing: your client's properties</h2>
+    <p class="hint">Paste a list (from Excel or Google Sheets: Address, Area, Price, Beds, Baths, Type, Link).</p>
+    <textarea id="propsCsv" placeholder="Address,Area,Price,Beds,Baths,Type,Link&#10;123 Main St,Liberty,265000,3,2,Single-family,https://…"></textarea>
+    <div class="row" style="margin-top:10px"><button id="importProps" type="button">Add properties</button></div>
+    <div id="propMsg" class="msg"></div>
+    <div class="tablewrap" style="margin-top:12px"><table id="props"></table></div>
+  </section>
+
+  <section>
+    <h2>4 · Matches → present to your client</h2>
+    <div class="row"><label class="muted">Minimum match <select id="minScore"><option value="80">80%</option><option value="60" selected>60%</option><option value="40">40%</option></select></label>
+      <button id="matchBtn" type="button">Find matches</button>
+      <button id="reportBtn" class="ghost" type="button">Client report (save as PDF)</button></div>
+    <div id="matchMsg" class="msg"></div>
+    <div id="matches"></div>
+  </section>
+
+  <section>
+    <h2>5 · Reach more people: ads</h2>
+    <p class="hint">Housing ads on Facebook and Instagram are a <b>Special Ad Category</b>: no targeting by age, gender or ZIP code. Describe the home, never who it's "for."</p>
+    <textarea id="adCheck" placeholder="Paste an ad to check the wording…" style="font:14px system-ui"></textarea>
+    <div class="row" style="margin-top:10px"><button id="checkBtn" class="ghost" type="button">Check fair-housing wording</button><a href="../adxr/?preset=realestate" style="color:var(--accent);font-weight:600">Write ads in AdXR →</a></div>
+    <div id="checkMsg" class="msg"></div>
+  </section>
+
+  <section>
+    <h2>Privacy</h2>
+    <p class="hint">Everything here is saved only on this computer (data/superxr.json) and never uploaded to GitHub.</p>
+    <button id="clearBtn" class="danger" type="button">Delete all needs and properties</button>
+  </section>
+</main>
+
+<script>
+(function () {
+  const KEY = 'adsuperxr-data';
+  const shims = {
+    fs: {
+      readFileSync() { let v = null; try { v = localStorage.getItem(KEY); } catch (e) {} if (v == null) throw new Error('empty'); return v; },
+      writeFileSync(_f, d) { try { localStorage.setItem(KEY, d); } catch (e) {} },
+      mkdirSync() {}, existsSync() { try { return localStorage.getItem(KEY) != null; } catch (e) { return false; } },
+    },
+    path: { join: (...a) => a.join('/') },
+    './log': { info() {}, warn() {}, error() {} },
+    './env': {},
+  };
+  const defs = {}, cache = {};
+  defs["./superxr"] = function (module, exports, require, __dirname) {
+// AdSuperXR — connect "the needing" (people looking) to "the willing" (your client's offer).
+// First template: REAL ESTATE BUYERS for an investor who is selling properties.
+//
+// Privacy: buyer data stays on THIS computer in data/superxr.json (never uploaded to GitHub).
+// Consent: only buyers who agreed to be contacted are ever matched or put in a report.
+const fs = require('fs');
+const path = require('path');
+const log = require('./log');
+
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_FILE = path.join(DATA_DIR, 'superxr.json');
+
+// ---------- Storage ----------
+function load() {
+  try { return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')); } catch { return { leads: [], properties: [] }; }
+}
+function save(db) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.writeFileSync(DATA_FILE, JSON.stringify(db, null, 2));
+}
+const newId = (p) => p + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+// ---------- Form template (EN / ES / PT) ----------
+const TEMPLATE = {
+  id: 'realestate-buyers',
+  title: { en: 'Looking for a home?', es: '¿Busca casa?', pt: 'Procurando uma casa?' },
+  intro: {
+    en: 'Tell us what you\'re looking for and we\'ll send you homes that match. Free, no obligation.',
+    es: 'Díganos qué busca y le enviaremos casas que coincidan. Gratis y sin compromiso.',
+    pt: 'Conte o que você procura e enviaremos casas que combinam. Grátis e sem compromisso.',
+  },
+  questions: [
+    { key: 'name', en: 'Your name', es: 'Su nombre', pt: 'Seu nome' },
+    { key: 'phone', en: 'Phone', es: 'Teléfono', pt: 'Telefone' },
+    { key: 'email', en: 'Email', es: 'Correo electrónico', pt: 'E-mail' },
+    { key: 'language', en: 'Preferred language (English / Español / Português)', es: 'Idioma preferido (English / Español / Português)', pt: 'Idioma preferido (English / Español / Português)' },
+    { key: 'areas', en: 'Areas or cities you want (e.g., Liberty, Kearney, Northland)', es: 'Zonas o ciudades que busca (ej.: Liberty, Kearney, Northland)', pt: 'Regiões ou cidades que procura (ex.: Liberty, Kearney, Northland)' },
+    { key: 'budget', en: 'Maximum budget ($)', es: 'Presupuesto máximo ($)', pt: 'Orçamento máximo ($)' },
+    { key: 'beds', en: 'Minimum bedrooms', es: 'Mínimo de recámaras', pt: 'Mínimo de quartos' },
+    { key: 'baths', en: 'Minimum bathrooms', es: 'Mínimo de baños', pt: 'Mínimo de banheiros' },
+    { key: 'timeline', en: 'When do you want to buy? (Now / 1–3 months / 3–6 months / Just looking)', es: '¿Cuándo quiere comprar? (Ya / 1–3 meses / 3–6 meses / Solo mirando)', pt: 'Quando quer comprar? (Agora / 1–3 meses / 3–6 meses / Só olhando)' },
+    { key: 'financing', en: 'How will you pay? (Cash / Pre-approved loan / Need help with a loan / Not sure)', es: '¿Cómo pagará? (Contado / Préstamo preaprobado / Necesito ayuda con el préstamo / No sé)', pt: 'Como vai pagar? (À vista / Financiamento pré-aprovado / Preciso de ajuda com financiamento / Não sei)' },
+    { key: 'consent', type: 'checkbox', en: 'I agree to be contacted', es: 'Acepto ser contactado', pt: 'Aceito ser contatado' },
+  ],
+  // Contact consent. Required before anyone calls, texts or emails a lead.
+  consentText: {
+    en: 'By submitting, I agree that {business} may contact me about homes by phone call, text message or email at the number and email I provided, including by automated means. Consent is not a condition of purchase. Message and data rates may apply. Reply STOP to opt out.',
+    es: 'Al enviar este formulario, acepto que {business} me contacte sobre casas por llamada, mensaje de texto o correo electrónico al número y correo que proporcioné, incluso por medios automatizados. El consentimiento no es condición de compra. Pueden aplicarse tarifas de mensajes y datos. Responda STOP para cancelar.',
+    pt: 'Ao enviar, autorizo que {business} entre em contato comigo sobre imóveis por ligação, mensagem de texto ou e-mail, no número e e-mail informados, inclusive por meios automatizados. O consentimento não é condição de compra. Podem ser cobradas tarifas de mensagens e dados. Responda STOP para cancelar.',
+  },
+};
+
+// ---------- CSV import (Google Forms / Tally / Excel export) ----------
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', q = false;
+  const s = String(text || '').replace(/^﻿/, '');
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (q) {
+      if (c === '"' && s[i + 1] === '"') { field += '"'; i++; }
+      else if (c === '"') q = false;
+      else field += c;
+    } else if (c === '"') q = true;
+    else if (c === ',' || c === ';' || c === '\t') { row.push(field); field = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && s[i + 1] === '\n') i++;
+      row.push(field); field = '';
+      if (row.some((v) => v.trim() !== '')) rows.push(row);
+      row = [];
+    } else field += c;
+  }
+  row.push(field);
+  if (row.some((v) => v.trim() !== '')) rows.push(row);
+  if (rows.length < 2) throw new Error('The file needs a header row and at least one data row.');
+  const headers = rows[0].map((h) => h.trim());
+  return rows.slice(1).map((r) => Object.fromEntries(headers.map((h, i) => [h, (r[i] || '').trim()])));
+}
+
+// Match messy column names (in any of the 3 languages) to our fields.
+const ALIASES = {
+  name: /^(name|full name|your name|nombre|su nombre|nome|seu nome)/i,
+  phone: /(phone|tel[eé]fono|telefone|celular|whatsapp)/i,
+  email: /(e-?mail|correo)/i,
+  language: /(language|idioma)/i,
+  areas: /(area|areas|zona|zonas|city|cities|ciudad|cidade|regi[oõ]|neighbo)/i,
+  budget: /(budget|presupuesto|or[cç]amento|max.*price|precio|pre[cç]o)/i,
+  beds: /(bed|rec[aá]mara|habitaci|quarto|dormit)/i,
+  baths: /(bath|ba[nñ]o|banheiro)/i,
+  timeline: /(when|timeline|cu[aá]ndo|quando|timeframe)/i,
+  financing: /(pay|financ|pago|pagar|loan|pr[eé]stamo|financiamento)/i,
+  consent: /(consent|agree|acepto|aceito|autorizo|contact)/i,
+  timestamp: /(timestamp|marca temporal|carimbo|submitted|date)/i,
+  // property list
+  label: /(label|address|direcci[oó]n|endere[cç]o|property|propiedad|im[oó]vel)/i,
+  area: /^(area|zona|city|ciudad|cidade|neighborhood|regi[aã]o)$/i,
+  price: /(price|precio|pre[cç]o|asking)/i,
+  type: /(type|tipo)/i,
+  link: /(link|url|listing)/i,
+};
+
+function mapRow(row, keys) {
+  const out = {};
+  for (const [header, value] of Object.entries(row)) {
+    for (const k of keys) {
+      if (out[k] == null && ALIASES[k].test(header)) { out[k] = value; break; }
+    }
+  }
+  return out;
+}
+
+const num = (v) => {
+  const m = String(v || '').replace(/[, ]/g, '').match(/(\d+(\.\d+)?)\s*(k)?/i);
+  if (!m) return null;
+  return parseFloat(m[1]) * (m[3] ? 1000 : 1);
+};
+const yes = (v) => /^(y|yes|s[ií]|sim|true|1|x|✓|checked|acepto|aceito|i agree|agree)/i.test(String(v || '').trim()) || /agree|acepto|aceito|autorizo/i.test(String(v || ''));
+const listOf = (v) => String(v || '').split(/[,;/]| or | o | ou /i).map((s) => s.trim().toLowerCase()).filter(Boolean);
+
+function timelineScore(v) {
+  const s = String(v || '').toLowerCase();
+  if (/now|ya|agora|asap|immediat|inmediat|imediat/.test(s)) return 1;
+  if (/1.?-?.?3|1 a 3/.test(s)) return 0.8;
+  if (/3.?-?.?6|3 a 6/.test(s)) return 0.5;
+  return 0.2; // just looking / unknown
+}
+function financingScore(v) {
+  const s = String(v || '').toLowerCase();
+  if (/cash|contado|vista|efectivo/.test(s)) return 1;
+  if (/pre-?approved|preaprobado|pr[eé]-?aprovado/.test(s)) return 0.9;
+  if (/help|ayuda|ajuda/.test(s)) return 0.5;
+  return 0.3;
+}
+
+function normalizeLead(raw) {
+  const m = mapRow(raw, ['name', 'phone', 'email', 'language', 'areas', 'budget', 'beds', 'baths', 'timeline', 'financing', 'consent', 'timestamp']);
+  return {
+    id: newId('lead'),
+    name: m.name || '',
+    phone: m.phone || '',
+    email: m.email || '',
+    language: m.language || '',
+    areas: listOf(m.areas),
+    budget: num(m.budget),
+    beds: num(m.beds),
+    baths: num(m.baths),
+    timeline: m.timeline || '',
+    financing: m.financing || '',
+    consent: yes(m.consent),
+    consentAt: m.timestamp || new Date().toISOString(),
+  };
+}
+
+function normalizeProperty(raw) {
+  const m = mapRow(raw, ['label', 'area', 'price', 'beds', 'baths', 'type', 'link']);
+  return {
+    id: newId('prop'),
+    label: m.label || 'Property',
+    area: String(m.area || '').trim(),
+    price: num(m.price),
+    beds: num(m.beds),
+    baths: num(m.baths),
+    type: m.type || '',
+    link: m.link || '',
+  };
+}
+
+function importLeads(csv) {
+  const db = load();
+  const rows = parseCSV(csv).map(normalizeLead);
+  const seen = new Set(db.leads.map((l) => (l.email || l.phone).toLowerCase()));
+  let added = 0, dupes = 0, noConsent = 0;
+  for (const l of rows) {
+    const key = (l.email || l.phone).toLowerCase();
+    if (key && seen.has(key)) { dupes++; continue; }
+    if (!l.consent) noConsent++;
+    db.leads.push(l); seen.add(key); added++;
+  }
+  save(db);
+  log.info('superxr.leads_imported', { added, dupes, noConsent }); // counts only — no personal data in logs
+  return { added, dupes, noConsent, total: db.leads.length };
+}
+
+function importProperties(csv) {
+  const db = load();
+  const rows = parseCSV(csv).map(normalizeProperty);
+  db.properties.push(...rows);
+  save(db);
+  log.info('superxr.properties_imported', { added: rows.length });
+  return { added: rows.length, total: db.properties.length };
+}
+
+
+// ---------- Needs found in public posts (no sign-up form) ----------
+// Log what someone publicly said they need. No phone/email is stored. The person's
+// details are only shared with your client after THEY agree to an introduction.
+const STATUSES = ['found', 'replied', 'interested', 'introduced', 'closed', 'not interested'];
+const SHAREABLE = new Set(['interested', 'introduced', 'closed']);
+
+function addNeed(input = {}) {
+  const db = load();
+  const need = {
+    id: newId('need'),
+    origin: 'post',
+    platform: String(input.platform || '').trim(),
+    link: String(input.link || '').trim(),
+    handle: String(input.handle || '').trim(),   // public username only
+    note: String(input.note || '').trim().slice(0, 500),
+    language: String(input.language || '').trim(),
+    areas: listOf(input.areas),
+    budget: num(input.budget),
+    beds: num(input.beds),
+    baths: num(input.baths),
+    timeline: String(input.timeline || '').trim(),
+    financing: String(input.financing || '').trim(),
+    postedAt: String(input.postedAt || '').trim() || new Date().toISOString().slice(0, 10),
+    status: 'found',
+    consent: false,
+  };
+  if (!need.areas.length && need.budget == null && need.beds == null) throw new Error('Add at least the area, budget or bedrooms they asked for.');
+  db.leads.push(need);
+  save(db);
+  log.info('superxr.need_added', { platform: need.platform }); // no personal details in logs
+  return need;
+}
+
+function setStatus(id, status) {
+  if (!STATUSES.includes(status)) throw new Error('Unknown status.');
+  const db = load();
+  const lead = db.leads.find((l) => l.id === id);
+  if (!lead) throw new Error('Not found.');
+  lead.status = status;
+  if (SHAREABLE.has(status)) { lead.consent = true; lead.consentAt = lead.consentAt || new Date().toISOString(); }
+  if (status === 'not interested') lead.consent = false;
+  save(db);
+  return lead;
+}
+
+const canShare = (lead) => lead.origin === 'post' ? SHAREABLE.has(lead.status) : lead.consent;
+
+// ---------- Matching ----------
+// Each buyer vs. each property: 0–100 with plain-language reasons.
+function scoreMatch(lead, prop) {
+  const reasons = [], misses = [];
+  let pts = 0, max = 0;
+
+  max += 30;
+  if (!lead.areas.length || !prop.area) { pts += 15; reasons.push('Area not specified'); }
+  else if (lead.areas.some((a) => prop.area.toLowerCase().includes(a) || a.includes(prop.area.toLowerCase()))) { pts += 30; reasons.push(`Wants ${prop.area}`); }
+  else misses.push(`Wants ${lead.areas.join(', ')}, not ${prop.area}`);
+
+  max += 30;
+  if (lead.budget == null || prop.price == null) { pts += 15; reasons.push('Budget not given'); }
+  else if (prop.price <= lead.budget) { pts += 30; reasons.push(`In budget (${fmt(prop.price)} ≤ ${fmt(lead.budget)})`); }
+  else if (prop.price <= lead.budget * 1.1) { pts += 15; reasons.push(`Slightly over budget (+${Math.round((prop.price / lead.budget - 1) * 100)}%)`); }
+  else misses.push(`Over budget (${fmt(prop.price)} > ${fmt(lead.budget)})`);
+
+  for (const [key, label] of [['beds', 'bedrooms'], ['baths', 'bathrooms']]) {
+    max += 10;
+    if (lead[key] == null || prop[key] == null) pts += 5;
+    else if (prop[key] >= lead[key]) { pts += 10; reasons.push(`${prop[key]} ${label} (needs ${lead[key]}+)`); }
+    else misses.push(`Only ${prop[key]} ${label} (needs ${lead[key]}+)`);
+  }
+
+  max += 10; const t = timelineScore(lead.timeline); pts += 10 * t;
+  if (t >= 0.8) reasons.push(`Ready soon (${lead.timeline})`);
+  max += 10; const f = financingScore(lead.financing); pts += 10 * f;
+  if (f >= 0.9) reasons.push(`Strong buyer (${lead.financing})`);
+
+  // A hard miss on area or budget caps the score: those are deal-breakers.
+  let score = Math.round((pts / max) * 100);
+  if (misses.some((m) => /^Wants|^Over budget/.test(m))) score = Math.min(score, 40);
+  return { score, reasons, misses };
+}
+const fmt = (n) => Number(n).toLocaleString('en-US');
+
+function matchAll({ minScore = 60 } = {}) {
+  const db = load();
+  // Needs from posts are matched while you're still talking to the person (shown
+  // anonymously). Form leads without consent and "not interested" people are excluded.
+  const eligible = db.leads.filter((l) => (l.origin === 'post' ? l.status !== 'not interested' : l.consent));
+  const results = db.properties.map((p) => ({
+    property: p,
+    buyers: eligible
+      .map((l) => ({ lead: l, shareable: canShare(l), ...scoreMatch(l, p) }))
+      .filter((m) => m.score >= minScore)
+      .sort((a, b) => b.score - a.score),
+  }));
+  return { results, excludedNoConsent: db.leads.length - eligible.length, leads: db.leads.length, properties: db.properties.length };
+}
+
+// ---------- Fair-housing wording check for ads ----------
+// Housing ads must not show a preference based on protected traits.
+const FAIR_HOUSING_FLAGS = [
+  [/\b(perfect|ideal|great) for (a )?(family|families|couples?|singles?|retirees|young professionals|students)\b/i, 'Describes who the home is "for" (describe the home instead)'],
+  [/\b(no (kids|children)|adults only|adult community|empty nesters?)\b/i, 'Excludes families with children'],
+  [/\b(christian|catholic|muslim|jewish|church|mosque|synagogue)\b/i, 'Mentions religion'],
+  [/\b(english only|no section 8|american(s)? only|hispanic|latino|white|black|asian)\b/i, 'Mentions national origin, race, or source of income'],
+  [/\b(able[- ]bodied|no wheelchairs?|handicap)\b/i, 'Mentions disability'],
+  [/\b(familias? ideal|ideal para (familias?|parejas|solteros))\b/i, 'Describe la casa, no a quién es "ideal" (ES)'],
+  [/\b(ideal para (fam[ií]lias?|casais|solteiros))\b/i, 'Descreva o imóvel, não para quem é "ideal" (PT)'],
+];
+function fairHousingCheck(text) {
+  return FAIR_HOUSING_FLAGS.filter(([rx]) => rx.test(text)).map(([, why]) => why);
+}
+
+
+// ---------- Find "the needing": where people post that they're looking ----------
+// Search links only (you browse and reply yourself) — no scraping. People enter
+// AdSuperXR only by filling YOUR form, which records their consent.
+const LISTEN_KEYWORDS = {
+  en: ['looking for a house', 'looking to buy a home', 'first time home buyer', 'house for sale', 'need a place to live'],
+  es: ['busco casa', 'busco casa en venta', 'quiero comprar casa', 'casa en venta'],
+  pt: ['procuro casa', 'quero comprar casa', 'casa à venda', 'procurando casa'],
+};
+function listenLinks(city = 'Kansas City') {
+  const c = String(city || '').trim();
+  const out = [];
+  for (const [lang, kws] of Object.entries(LISTEN_KEYWORDS)) {
+    for (const kw of kws) {
+      const q = encodeURIComponent(`${kw} ${c}`.trim());
+      out.push({
+        lang, keyword: kw,
+        facebook: `https://www.facebook.com/search/posts/?q=${q}`,
+        reddit: `https://www.reddit.com/search/?q=${q}&sort=new`,
+        google: `https://www.google.com/search?q=${q}&tbs=qdr:w`,
+      });
+    }
+  }
+  return {
+    searches: out,
+    craigslistHousingWanted: 'https://kansascity.craigslist.org/search/hsw',
+    f5bot: 'https://f5bot.com/',
+  };
+}
+const REPLY_TEMPLATES = {
+  en: 'Hi! I saw you\'re looking for a home in {area}. I work with a local investor who has homes for sale there, and one may fit what you described. Would you like me to connect you? No cost, no obligation.',
+  es: '¡Hola! Vi que busca casa en {area}. Trabajo con un inversionista local que tiene casas en venta ahí, y una podría ser lo que usted describió. ¿Quiere que los ponga en contacto? Sin costo y sin compromiso.',
+  pt: 'Oi! Vi que você procura casa em {area}. Trabalho com um investidor local que tem casas à venda aí, e uma pode ser o que você descreveu. Quer que eu faça a apresentação? Sem custo e sem compromisso.',
+};
+
+function getData() { return load(); }
+function clearData() { save({ leads: [], properties: [] }); log.info('superxr.cleared'); }
+function deleteItem(kind, id) {
+  const db = load();
+  const key = kind === 'lead' ? 'leads' : 'properties';
+  db[key] = db[key].filter((x) => x.id !== id);
+  save(db);
+}
+
+module.exports = {
+  TEMPLATE, parseCSV, normalizeLead, normalizeProperty, importLeads, importProperties,
+  scoreMatch, matchAll, fairHousingCheck, getData, clearData, deleteItem, DATA_FILE,
+  listenLinks, REPLY_TEMPLATES, addNeed, setStatus, STATUSES,
+};
+
+};
+  function req(n) {
+    if (n in shims) return shims[n];
+    if (cache[n]) return cache[n].exports;
+    const module = { exports: {} }; cache[n] = module;
+    defs[n](module, module.exports, req, '.');
+    return module.exports;
+  }
+  window.__req = req;
+})();
+</script>
+<script>
+const $ = (id) => document.getElementById(id);
+let STATUSES = [], REPLIES = {}, lastMatch = null;
+async function api(path, body) {
+  const s = window.__req('./superxr'); const b = body || {};
+  if (path === '/api/superxr/template') return { template: s.TEMPLATE, replies: s.REPLY_TEMPLATES, statuses: s.STATUSES };
+  if (path === '/api/superxr/listen') return s.listenLinks(b.city);
+  if (path === '/api/superxr/data') return s.getData();
+  if (path === '/api/superxr/leads') return s.importLeads(b.csv);
+  if (path === '/api/superxr/properties') return s.importProperties(b.csv);
+  if (path === '/api/superxr/need') return s.addNeed(b);
+  if (path === '/api/superxr/status') return s.setStatus(b.id, b.status);
+  if (path === '/api/superxr/match') return s.matchAll(b);
+  if (path === '/api/superxr/check-ad') return { issues: s.fairHousingCheck(b.text) };
+  if (path === '/api/superxr/delete') { if (b.all) s.clearData(); else s.deleteItem(b.kind, b.id); return { ok: true }; }
+  throw new Error('Not available in the web version.');
+}
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v; else n.setAttribute(k, v); }
+  kids.flat().forEach((k) => k != null && n.append(k));
+  return n;
+}
+function say(id, text, kind = '') { $(id).textContent = text; $(id).className = 'msg ' + kind; }
+const money = (n) => n == null ? '—' : '$' + Number(n).toLocaleString('en-US');
+const titleCase = (a) => a.replace(/\b\p{L}/gu, (c) => c.toUpperCase());
+const need = (l) => [l.areas.length ? l.areas.map(titleCase).join(', ') : 'any area', l.budget != null ? '≤ ' + money(l.budget) : null, l.beds != null ? l.beds + '+ bd' : null, l.baths != null ? l.baths + '+ ba' : null, l.timeline || null].filter(Boolean).join(' · ');
+
+// ---- 1. Find the need ----
+$('listenBtn').addEventListener('click', async () => {
+  const r = await api('/api/superxr/listen', { city: $('city').value });
+  const flags = { en: '🇺🇸', es: '🇪🇸', pt: '🇧🇷' };
+  $('listen').replaceChildren(...r.searches.map((s) => el('div', {},
+    el('div', { class: 'muted', text: flags[s.lang] + ' "' + s.keyword + '"' }),
+    el('a', { href: s.facebook, target: '_blank', rel: 'noopener', text: 'Facebook' }),
+    el('a', { href: s.reddit, target: '_blank', rel: 'noopener', text: 'Reddit' }),
+    el('a', { href: s.google, target: '_blank', rel: 'noopener', text: 'Google (this week)' }))));
+  $('extra').replaceChildren(
+    el('a', { href: r.craigslistHousingWanted, target: '_blank', rel: 'noopener', style: 'color:var(--accent);font-weight:600', text: 'Craigslist "housing wanted" ↗' }), ' · ',
+    el('a', { href: r.f5bot, target: '_blank', rel: 'noopener', style: 'color:var(--accent);font-weight:600', text: 'F5Bot: free email alerts for new Reddit posts ↗' }));
+  const area = $('city').value || 'your area';
+  $('replies').replaceChildren(el('h3', { style: 'font-size:15px;margin:16px 0 4px', text: 'Reply templates (copy and personalize)' }),
+    ...Object.entries(REPLIES).map(([lang, t]) => {
+      const text = t.replace('{area}', area);
+      const b = el('button', { class: 'small ghost', type: 'button', text: 'Copy' });
+      b.addEventListener('click', () => navigator.clipboard.writeText(text).then(() => { b.textContent = 'Copied ✓'; }).catch(() => {}));
+      return el('div', { class: 'reply' }, el('b', { text: flags[lang] + ' ' }), text, ' ', b);
+    }));
+});
+
+// ---- 2. Needs ----
+$('addNeedBtn').addEventListener('click', async () => {
+  const f = (k) => $('n_' + k).value;
+  try {
+    await api('/api/superxr/need', { platform: f('platform'), handle: f('handle'), link: f('link'), areas: f('areas'), budget: f('budget'), beds: f('beds'), baths: f('baths'), timeline: f('timeline'), financing: f('financing'), language: f('language'), note: f('note') });
+    ['handle', 'link', 'areas', 'budget', 'beds', 'baths', 'note'].forEach((k) => { $('n_' + k).value = ''; });
+    say('needMsg', 'Need added ✓', 'ok'); refresh();
+  } catch (e) { say('needMsg', e.message, 'err'); }
+});
+
+async function refresh() {
+  const d = await api('/api/superxr/data');
+  const needs = d.leads;
+  $('needs').replaceChildren(el('tr', {}, ['Need', 'Where found', 'Status', ''].map((h) => el('th', { text: h }))),
+    ...needs.map((l) => {
+      const sel = el('select', {}); STATUSES.forEach((s) => { const o = el('option', { value: s, text: s }); if (s === (l.status || (l.consent ? 'interested' : 'found'))) o.selected = true; sel.append(o); });
+      sel.addEventListener('change', async () => { await api('/api/superxr/status', { id: l.id, status: sel.value }); refresh(); });
+      const del = el('button', { class: 'small danger', type: 'button', text: 'Delete' });
+      del.addEventListener('click', async () => { await api('/api/superxr/delete', { kind: 'lead', id: l.id }); refresh(); });
+      const where = l.link ? el('a', { href: l.link, target: '_blank', rel: 'noopener', style: 'color:var(--accent)', text: (l.platform || 'post') + (l.handle ? ' · ' + l.handle : '') }) : (l.platform || 'form');
+      return el('tr', {}, el('td', {}, need(l), l.note ? el('div', { class: 'muted', text: l.note }) : null), el('td', {}, where), el('td', {}, sel), el('td', {}, del));
+    }));
+  if (!needs.length) $('needs').append(el('tr', {}, el('td', { class: 'muted', text: 'No needs logged yet.' })));
+  $('props').replaceChildren(el('tr', {}, ['Property', 'Area', 'Price', 'Bd/Ba', ''].map((h) => el('th', { text: h }))),
+    ...d.properties.map((p) => {
+      const del = el('button', { class: 'small danger', type: 'button', text: 'Delete' });
+      del.addEventListener('click', async () => { await api('/api/superxr/delete', { kind: 'property', id: p.id }); refresh(); });
+      return el('tr', {}, el('td', { text: p.label }), el('td', { text: p.area }), el('td', { text: money(p.price) }), el('td', { text: (p.beds ?? '—') + ' / ' + (p.baths ?? '—') }), el('td', {}, del));
+    }));
+}
+
+// ---- 3. Properties ----
+$('importProps').addEventListener('click', async () => {
+  try { const r = await api('/api/superxr/properties', { csv: $('propsCsv').value }); say('propMsg', r.added + ' properties added ✓', 'ok'); $('propsCsv').value = ''; refresh(); }
+  catch (e) { say('propMsg', e.message, 'err'); }
+});
+
+// ---- 4. Matches ----
+$('matchBtn').addEventListener('click', async () => {
+  lastMatch = await api('/api/superxr/match', { minScore: Number($('minScore').value) });
+  const box = $('matches'); box.replaceChildren();
+  let total = 0;
+  lastMatch.results.forEach((r) => {
+    total += r.buyers.length;
+    box.append(el('div', { class: 'match' },
+      el('h3', { text: r.property.label }),
+      el('div', { class: 'muted', text: [r.property.area, money(r.property.price), (r.property.beds ?? '—') + ' bd / ' + (r.property.baths ?? '—') + ' ba'].join(' · ') }),
+      r.buyers.length ? r.buyers.map((b) => el('div', { class: 'buyer' },
+        el('div', { class: 'score ' + (b.score >= 80 ? 'good' : 'mid'), text: b.score + '%' }),
+        el('div', {}, el('b', { text: need(b.lead) }), el('span', { class: 'tag' + (b.shareable ? ' shared' : ''), text: b.shareable ? 'agreed to intro' : (b.lead.status || 'found') }),
+          el('div', { class: 'muted', text: '✓ ' + b.reasons.join(' · ') }),
+          b.misses.length ? el('div', { class: 'muted', text: '✗ ' + b.misses.join(' · ') }) : null))) : el('div', { class: 'muted', text: 'No matches at this level yet.' })));
+  });
+  say('matchMsg', total + ' match(es) found.' + (lastMatch.excludedNoConsent ? ' ' + lastMatch.excludedNoConsent + ' left out (said no).' : ''), 'ok');
+});
+
+// Client report: anonymous until the buyer agrees to an introduction.
+$('reportBtn').addEventListener('click', () => {
+  if (!lastMatch) { say('matchMsg', 'Click "Find matches" first.', 'err'); return; }
+  const w = window.open('', '_blank');
+  const d = w.document;
+  d.title = 'Buyer matches report';
+  const style = d.createElement('style');
+  style.textContent = 'body{font:14px/1.5 system-ui,sans-serif;color:#111;margin:32px;max-width:760px}h1{font-size:22px;margin:0}h2{font-size:16px;margin:22px 0 6px;border-bottom:1px solid #ccc;padding-bottom:4px}.b{padding:6px 0;border-bottom:1px solid #eee}.s{font-weight:700;color:#0f6e5c}.m{color:#666;font-size:12.5px}';
+  d.head.append(style);
+  const h = (tag, text, cls) => { const n = d.createElement(tag); n.textContent = text; if (cls) n.className = cls; return n; };
+  d.body.append(h('h1', 'Buyer matches for your properties'), h('p', 'Prepared ' + new Date().toLocaleDateString() + ' by MainEntry LLC · AdSuperXR', 'm'),
+    h('p', 'Buyers are shown anonymously. Contact details are shared only after the buyer agrees to an introduction.', 'm'));
+  lastMatch.results.forEach((r) => {
+    d.body.append(h('h2', r.property.label + ' — ' + [r.property.area, money(r.property.price)].join(' · ')));
+    if (!r.buyers.length) d.body.append(h('div', 'No matching buyers yet.', 'm'));
+    r.buyers.forEach((b, i) => {
+      const row = d.createElement('div'); row.className = 'b';
+      row.append(h('span', b.score + '% ', 's'), h('span', 'Buyer ' + (i + 1) + ': ' + need(b.lead)));
+      row.append(h('div', b.reasons.join(' · '), 'm'));
+      row.append(h('div', b.shareable ? 'Agreed to an introduction ✓' : 'Introduction available on request', 'm'));
+      d.body.append(row);
+    });
+  });
+  setTimeout(() => w.print(), 300);
+});
+
+// ---- 5. Ad check ----
+$('checkBtn').addEventListener('click', async () => {
+  const r = await api('/api/superxr/check-ad', { text: $('adCheck').value });
+  say('checkMsg', r.issues.length ? '⚠️ ' + r.issues.join(' · ') : 'No fair-housing wording problems found ✓', r.issues.length ? 'err' : 'ok');
+});
+
+$('clearBtn').addEventListener('click', async () => {
+  if ($('clearBtn').dataset.sure !== '1') { $('clearBtn').dataset.sure = '1'; $('clearBtn').textContent = 'Click again to delete everything'; return; }
+  await api('/api/superxr/delete', { all: true }); $('clearBtn').dataset.sure = ''; $('clearBtn').textContent = 'Delete all needs and properties'; refresh();
+});
+
+api('/api/superxr/template').then((t) => { STATUSES = t.statuses; REPLIES = t.replies; refresh(); })
+  .catch(() => say('needMsg', 'Server not reachable. Is the black window running?', 'err'));
+</script>
+</body>
+</html>
